@@ -1,6 +1,6 @@
 // client create: GitBuilderClient
 /* geninfo:
-   filename  : protos/golang.conradwood.net/apis/gitbuilder/gitbuilder.proto
+   filename  : golang.conradwood.net/apis/gitbuilder/gitbuilder.proto
    gopackage : golang.conradwood.net/apis/gitbuilder
    importname: ai_0
    varname   : client_GitBuilderClient_0
