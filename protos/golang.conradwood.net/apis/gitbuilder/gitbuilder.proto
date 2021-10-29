@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package gitbuilder;
+option java_package = "net.conradwood.apis.gitbuilder";
+import "golang.conradwood.net/apis/common/common.proto";
+
+// comment: message pingresponse
+message PingResponse {
+  // comment: field pingresponse.response
+  string Response = 1;
+}
+message BuildRequest {
+  string GitURL=1; // the git repository url
+  repeated string FetchURLS=2; // any fetch urls that need to be applied before build (for gerrit patches)
+  string CommitID=3; // the commit id to build
+}
+message BuildResponse {
+  bytes Stdout=1;// the output of the build process streamed back
+  bool Complete=2; // if true this is the last message
+  string ResultMessage=3; // a human-readable message
+  bool Success=4; // if true the build succeeded
+}
+// this is doing the actual build. It checksout a git repository, runs the build
+// and uploads the artefacts
+service GitBuilder {
+  // comment: rpc ping
+  rpc Ping(common.Void) returns (PingResponse);
+  // build something. Note that this RPC might take several minutes to complete
+  rpc Build(BuildRequest) returns (stream BuildResponse);
+}
+
+
