@@ -1,10 +1,8 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
-	"golang.conradwood.net/apis/common"
 	pb "golang.conradwood.net/apis/gitbuilder"
 	"golang.conradwood.net/go-easyops/server"
 	"golang.conradwood.net/go-easyops/utils"
@@ -42,10 +40,7 @@ func main() {
 * grpc functions
 ************************************/
 
-func (e *echoServer) Ping(ctx context.Context, req *common.Void) (*pb.PingResponse, error) {
-	resp := &pb.PingResponse{Response: "pingresponse"}
-	return resp, nil
-}
 func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) error {
+
 	return fmt.Errorf("not implemented")
 }
