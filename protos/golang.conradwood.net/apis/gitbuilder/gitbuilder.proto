@@ -4,11 +4,6 @@ package gitbuilder;
 option java_package = "net.conradwood.apis.gitbuilder";
 import "golang.conradwood.net/apis/common/common.proto";
 
-// comment: message pingresponse
-message PingResponse {
-  // comment: field pingresponse.response
-  string Response = 1;
-}
 message BuildRequest {
   string GitURL=1; // the git repository url
   repeated string FetchURLS=2; // any fetch urls that need to be applied before build (for gerrit patches)
@@ -24,8 +19,6 @@ message BuildResponse {
 // this is doing the actual build. It checksout a git repository, runs the build
 // and uploads the artefacts
 service GitBuilder {
-  // comment: rpc ping
-  rpc Ping(common.Void) returns (PingResponse);
   // build something. Note that this RPC might take several minutes to complete
   rpc Build(BuildRequest) returns (stream BuildResponse);
 }
