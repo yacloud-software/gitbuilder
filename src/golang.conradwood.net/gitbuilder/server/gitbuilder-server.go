@@ -5,6 +5,7 @@ import (
 	"fmt"
 	pb "golang.conradwood.net/apis/gitbuilder"
 	"golang.conradwood.net/git"
+	"golang.conradwood.net/gitbuilder/builder"
 	"golang.conradwood.net/go-easyops/server"
 	"golang.conradwood.net/go-easyops/utils"
 	"google.golang.org/grpc"
@@ -53,6 +54,15 @@ func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) 
 		return err
 	}
 	defer lr.Release()
+
+	bd, err := builder.NewBuilder(lr.GitRepoPath(), sw)
+	if err != nil {
+		return err
+	}
+	err = bd.BuildAll(ctx)
+	if err != nil {
+		return err
+	}
 	message := `
 this is a test message ,
 because the server is not yet fully implemented.

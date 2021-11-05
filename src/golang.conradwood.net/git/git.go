@@ -8,15 +8,22 @@ import (
 	"golang.conradwood.net/go-easyops/utils"
 	"io"
 	"os"
+	"path/filepath"
 	"sync"
 )
 
 var (
 	wd_lock     sync.Mutex
 	workdir_ctr = 0
-	workdir     = flag.String("workdir", "/tmp/gitbuilder", "workdir for repos")
+	f_workdir   = flag.String("workdir", "/tmp/gitbuilder", "workdir for repos")
 	recreated   = false
 )
+
+func workdir() string {
+	s, err := filepath.Abs(*f_workdir)
+	utils.Bail("failed to get absolut path", err)
+	return s
+}
 
 func getworkdirctr() int {
 	wd_lock.Lock()
@@ -28,7 +35,7 @@ func getworkdirctr() int {
 func recreate() {
 	wd_lock.Lock()
 	defer wd_lock.Unlock()
-	utils.RecreateSafely(*workdir)
+	utils.RecreateSafely(workdir())
 }
 
 type LocalRepo struct {
@@ -51,7 +58,7 @@ func GetLocalRepo(ctx context.Context, url string, fetchurls []string, stdout io
 	if len(lr.fetchurls) != 0 {
 		panic("cannot do fetch yet")
 	}
-	lr.workdir = fmt.Sprintf("%s/%d", *workdir, getworkdirctr())
+	lr.workdir = fmt.Sprintf("%s/%d", workdir(), getworkdirctr())
 	err := lr.Clone(ctx)
 	if err != nil {
 		return nil, err
@@ -63,7 +70,7 @@ func (lr *LocalRepo) Release() {
 	lr.inuse = false
 }
 func (lr *LocalRepo) Printf(txt string, args ...interface{}) {
-	s := fmt.Sprintf("[repo] ")
+	s := fmt.Sprintf("[git] ")
 	s = fmt.Sprintf(s+txt, args...)
 	fmt.Print(s)
 	if lr.stdout != nil {
@@ -93,7 +100,7 @@ func (lr *LocalRepo) Checkout(ctx context.Context, commitid string) error {
 	l.SetRuntime(300)
 
 	lr.Printf("Checking out commit %s\n", commitid)
-	dir := lr.workdir + "/repo"
+	dir := lr.GitRepoPath()
 	out, err := l.SafelyExecuteWithDir([]string{"git", "checkout", commitid}, dir, nil)
 	if err != nil {
 		lr.Printf("Error (%s): Git-checkout %s said: %s\n", err, commitid, out)
@@ -101,4 +108,9 @@ func (lr *LocalRepo) Checkout(ctx context.Context, commitid string) error {
 	}
 	lr.Printf("Checkout completed.\n")
 	return nil
+}
+
+// returns directory containing ".git"
+func (lr *LocalRepo) GitRepoPath() string {
+	return lr.workdir + "/repo"
 }
