@@ -48,6 +48,10 @@ func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) 
 	if err != nil {
 		return err
 	}
+	err = lr.Checkout(ctx, req.CommitID)
+	if err != nil {
+		return err
+	}
 	defer lr.Release()
 	message := `
 this is a test message ,
