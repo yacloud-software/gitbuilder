@@ -8,6 +8,7 @@ import (
 	"golang.conradwood.net/go-easyops/utils"
 	"io"
 	"os"
+	"time"
 )
 
 var (
@@ -23,7 +24,8 @@ func main() {
 	echoClient = pb.GetGitBuilderClient()
 
 	// a context with authentication
-	ctx := authremote.Context()
+	authremote.Context()
+	ctx := authremote.ContextWithTimeout(time.Duration(5) * time.Minute)
 
 	empty := &pb.BuildRequest{
 		GitURL:      *f_url,
