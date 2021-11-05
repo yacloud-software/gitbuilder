@@ -55,7 +55,12 @@ func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) 
 	}
 	defer lr.Release()
 
-	bd, err := builder.NewBuilder(lr.GitRepoPath(), sw)
+	bd, err := builder.NewBuilder(lr.GitRepoPath(), sw, req.BuildNumber, &builder.StandardBuildInfo{
+		Commit:       req.CommitID,
+		RepoID:       req.RepositoryID,
+		RepoName:     req.RepoName,
+		ArtefactName: req.ArtefactName,
+	})
 	if err != nil {
 		return err
 	}
