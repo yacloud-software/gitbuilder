@@ -43,7 +43,7 @@ func main() {
 ************************************/
 
 func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) error {
-	fmt.Printf("Building: %#v\n", req)
+	fmt.Printf("Building: url=\"%s\", commit=\"%s\", build=%d, repo=%d\n", req.GitURL, req.CommitID, req.BuildNumber, req.RepositoryID)
 
 	ctx := srv.Context()
 	sw := &serverwriter{srv: srv}
