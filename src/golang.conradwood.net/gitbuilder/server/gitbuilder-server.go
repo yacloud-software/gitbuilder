@@ -57,6 +57,10 @@ func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) 
 		return err
 	}
 	defer lr.Release()
+	logmessage, err := lr.GetLogMessage(ctx)
+	if err != nil {
+		return err
+	}
 
 	bd, err := builder.NewBuilder(lr.GitRepoPath(), sw, req.BuildNumber, &builder.StandardBuildInfo{
 		Commit:       req.CommitID,
@@ -67,11 +71,27 @@ func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) 
 	if err != nil {
 		return err
 	}
-	err = bd.BuildAll(ctx)
+
+	berr := bd.BuildAll(ctx)
+	br := &pb.BuildResponse{
+		Complete:   true,
+		Success:    true,
+		LogMessage: logmessage,
+	}
+	if berr != nil {
+		br.Success = false
+		br.ResultMessage = utils.ErrorString(berr)
+	}
+	err = srv.Send(br)
 	if err != nil {
 		return err
 	}
+
+	if berr != nil {
+		return berr
+	}
 	return nil
+
 }
 
 type serverwriter struct {

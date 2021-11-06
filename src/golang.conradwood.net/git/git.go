@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 )
 
@@ -113,4 +114,28 @@ func (lr *LocalRepo) Checkout(ctx context.Context, commitid string) error {
 // returns directory containing ".git"
 func (lr *LocalRepo) GitRepoPath() string {
 	return lr.workdir + "/repo"
+}
+
+// gets the logmessage of the currently checked out commit
+func (lr *LocalRepo) GetLogMessage(ctx context.Context) (string, error) {
+	l := linux.NewWithContext(ctx)
+	l.SetRuntime(300)
+	gitlog, err := l.SafelyExecuteWithDir([]string{"git", "log", "-1"}, lr.GitRepoPath(), nil)
+	if err != nil {
+		fmt.Printf("Git said: %s\n", gitlog)
+		return "", fmt.Errorf("failed to get git log (%s)", err)
+	}
+
+	logmessage := ""
+	sep := strings.Split(gitlog, "\n")
+	for i, l := range sep {
+		if l == "" {
+			logmessage = strings.Join(sep[i+1:], "\n")
+			logmessage = strings.TrimSuffix(logmessage, "\n")
+			logmessage = strings.TrimSpace(logmessage)
+
+		}
+		//fmt.Printf("%d. \"%s\"\n", i, l)
+	}
+	return logmessage, nil
 }
