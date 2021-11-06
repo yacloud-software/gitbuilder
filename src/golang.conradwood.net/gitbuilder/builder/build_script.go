@@ -57,8 +57,9 @@ func (b *Builder) buildscript(ctx context.Context, fscript, target_arch, target_
 	if err != nil {
 		return err
 	}
-	go b.pipeOutput(ep)
-	go b.pipeOutput(op)
+	fn := filepath.Base(fscript)
+	go b.pipeOutput(fn, ep)
+	go b.pipeOutput(fn, op)
 	cmd.Env = b.env()
 	b.addContextEnv(ctx, cmd)
 	cmd.Env = append(cmd.Env, fmt.Sprintf("TARGET_ARCH=%s", target_arch))
@@ -73,7 +74,7 @@ func (b *Builder) buildscript(ctx context.Context, fscript, target_arch, target_
 	}
 	return nil
 }
-func (b *Builder) pipeOutput(rc io.ReadCloser) {
+func (b *Builder) pipeOutput(scriptname string, rc io.ReadCloser) {
 	buf := make([]byte, 1024)
 	for {
 		n, err := rc.Read(buf)
@@ -84,7 +85,7 @@ func (b *Builder) pipeOutput(rc io.ReadCloser) {
 			fmt.Printf("Failed to read %s:\n", err)
 			break
 		}
-		b.Printf("%s", string(buf[:n]))
+		b.Printf("%s: %s", scriptname, string(buf[:n]))
 	}
 
 }
