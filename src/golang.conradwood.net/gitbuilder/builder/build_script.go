@@ -6,6 +6,7 @@ import (
 	am "golang.conradwood.net/apis/auth"
 	"golang.conradwood.net/go-easyops/auth"
 	"golang.conradwood.net/go-easyops/authremote"
+	"golang.conradwood.net/go-easyops/cmdline"
 	"golang.conradwood.net/go-easyops/utils"
 	"io"
 	"os"
@@ -137,6 +138,7 @@ LC_CTYPE=en_GB.UTF-8
 	res = append(res, fmt.Sprintf("GOBIN=%s/gobin", bindir))
 	res = append(res, fmt.Sprintf("GOCACHE=%s/gocache", bindir))
 	res = append(res, fmt.Sprintf("GOTMPDIR=%s/gotmp", bindir))
+	res = append(res, fmt.Sprintf("REGISTRY=%s", cmdline.GetClientRegistryAddress()))
 	//	res = append(res, fmt.Sprintf("SCRIPTDIR=%s", scriptsdir))
 
 	return res
