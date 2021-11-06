@@ -71,16 +71,6 @@ func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) 
 	if err != nil {
 		return err
 	}
-	message := `
-this is a test message ,
-because the server is not yet fully implemented.
-
-thanks for trying it out
-`
-	err = srv.Send(&pb.BuildResponse{Stdout: []byte(message)})
-	if err != nil {
-		return err
-	}
 	return nil
 }
 

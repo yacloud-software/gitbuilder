@@ -18,6 +18,7 @@ var (
 	f_dir         = flag.String("dir", "", "if not-empty, use this local working copy to build locally instead of calling the server")
 	f_buildnumber = flag.Uint("build", 0, "buildnumber to use for this build")
 	f_commitid    = flag.String("commitid", "", "commit id to set repository at for build")
+	f_name        = flag.String("name", "", "repo and artefact name")
 )
 
 func main() {
@@ -44,9 +45,11 @@ func main() {
 		os.Exit(0)
 	}
 	empty := &pb.BuildRequest{
-		GitURL:      *f_url,
-		CommitID:    *f_commitid,
-		BuildNumber: uint64(*f_buildnumber),
+		RepoName:     *f_name,
+		ArtefactName: *f_name,
+		GitURL:       *f_url,
+		CommitID:     *f_commitid,
+		BuildNumber:  uint64(*f_buildnumber),
 	}
 	stream, err := echoClient.Build(ctx, empty)
 	utils.Bail("Failed to ping server", err)
