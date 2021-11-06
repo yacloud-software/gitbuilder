@@ -18,6 +18,7 @@ message BuildResponse {
   bool Complete=2; // if true this is the last message
   string ResultMessage=3; // a human-readable message
   bool Success=4; // if true the build succeeded
+  string LogMessage=5; // the builder sends back the logmessage of the commit it built
 }
 // this is doing the actual build. It checksout a git repository, runs the build
 // and uploads the artefacts
