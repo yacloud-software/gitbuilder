@@ -27,6 +27,7 @@ func (b *Builder) readBuildrules() error {
 		b.Printf("rules file (%s) does not exist. no builds.\n", br)
 		return nil
 	}
+
 	fc, err := ioutil.ReadFile(br)
 	if err != nil {
 		return err
@@ -70,6 +71,10 @@ func (b *Builder) readBuildrules() error {
 			rules.Builds = []string{"AUTOBUILD_SH"}
 		}
 	}
+
+	// add defaults:
+	b.buildrules.Builds = append([]string{"CLEAN"}, b.buildrules.Builds...)
+	b.buildrules.Builds = append(b.buildrules.Builds, "DIST")
 	return nil
 }
 
@@ -83,14 +88,11 @@ func parseAction(s string) (int, error) {
 	}
 }
 
-// return scriptname or ""
+// return tag or ""
 func (b *BuildRules) CheckBuildType(buildtype string) string {
-	for _, b := range b.Builds {
-		if b == buildtype {
-			// build activated in BUILD_RULES
-			sc := BUILD_SCRIPTS[b]
-			return sc
-		}
+	_, valid := BUILD_SCRIPTS[buildtype]
+	if valid {
+		return buildtype
 	}
 	return ""
 }

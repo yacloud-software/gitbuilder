@@ -2,36 +2,38 @@ package builder
 
 import (
 	"fmt"
+	"golang.conradwood.net/gitbuilder/buildinfo"
 	"io"
 	"time"
 )
 
 var (
-	BUILD_SCRIPTS = map[string]string{
-		"STANDARD_PROTOS": "protos-build.sh",
-		"STANDARD_GO":     "go-build.sh",
-		"KICAD":           "kicad-build.sh",
-		"STANDARD_JAVA":   "java-build.sh",
+	// either name of scripts or coderunners. order of the array matters
+	BUILD_SCRIPTS = map[string][]string{
+		"STANDARD_PROTOS": []string{"protos-build.sh"},
+		"STANDARD_GO":     []string{"coderunner-go-version", "go-build.sh"},
+		"KICAD":           []string{"kicad-build.sh"},
+		"STANDARD_JAVA":   []string{"java-build.sh"},
+		"AUTOBUILD_SH":    []string{"autobuild.sh"},
+		"CLEAN":           []string{"clean-build.sh"},
+		"DIST":            []string{"dist.sh"},
+		"GO_MODULES":      []string{"coderunner-gomodule"},
 	}
 )
-
-type BuildInfo interface {
-	CommitID() string
-	RepositoryID() uint64
-	RepositoryName() string
-	RepositoryArtefactName() string
-}
 
 type Builder struct {
 	buildrules *BuildRules
 	path       string // path containing .git
 	stdout     io.Writer
-	buildid    uint64
+	buildid    uint64 // for the build management system
 	timestamp  time.Time
-	buildinfo  BuildInfo
+	buildinfo  buildinfo.BuildInfo // for the scripts and coderunners
 }
 
-func NewBuilder(repopath string, stdout io.Writer, buildid uint64, bi BuildInfo) (*Builder, error) {
+func (b *Builder) BuildInfo() buildinfo.BuildInfo {
+	return b.buildinfo
+}
+func NewBuilder(repopath string, stdout io.Writer, buildid uint64, bi buildinfo.BuildInfo) (*Builder, error) {
 	b := &Builder{path: repopath,
 		stdout:    stdout,
 		buildid:   buildid,
@@ -45,7 +47,7 @@ func NewBuilder(repopath string, stdout io.Writer, buildid uint64, bi BuildInfo)
 	return b, nil
 }
 func (b *Builder) Printf(txt string, args ...interface{}) {
-	s := fmt.Sprintf("[builder] ")
+	s := fmt.Sprintf("[builder %s] ", b.buildinfo.RepositoryName())
 	s = fmt.Sprintf(s+txt, args...)
 	fmt.Print(s)
 	if b.stdout != nil {

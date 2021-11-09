@@ -5,6 +5,7 @@ import (
 	"fmt"
 	pb "golang.conradwood.net/apis/gitbuilder"
 	"golang.conradwood.net/git"
+	_ "golang.conradwood.net/gitbuilder/appinfo"
 	"golang.conradwood.net/gitbuilder/builder"
 	"golang.conradwood.net/go-easyops/server"
 	"golang.conradwood.net/go-easyops/utils"
@@ -43,7 +44,8 @@ func main() {
 ************************************/
 
 func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) error {
-	fmt.Printf("Building: url=\"%s\", commitid=\"%s\", build=%d, repo=%d\n", req.GitURL, req.CommitID, req.BuildNumber, req.RepositoryID)
+	fmt.Printf("Building:\n")
+	fmt.Printf("-url=\"%s\" -commitid=\"%s\" -build=%d -repoid=%d -name=%s\n", req.GitURL, req.CommitID, req.BuildNumber, req.RepositoryID, req.RepoName)
 	fmt.Printf("  Reponame: \"%s\", Artefactname: \"%s\"\n", req.RepoName, req.ArtefactName)
 
 	ctx := srv.Context()
@@ -67,6 +69,7 @@ func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) 
 		RepoID:       req.RepositoryID,
 		RepoName:     req.RepoName,
 		ArtefactName: req.ArtefactName,
+		Build:        req.BuildNumber,
 	})
 	if err != nil {
 		return err

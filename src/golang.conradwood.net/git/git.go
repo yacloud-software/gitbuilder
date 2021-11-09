@@ -22,7 +22,7 @@ var (
 
 func workdir() string {
 	s, err := filepath.Abs(*f_workdir)
-	utils.Bail("failed to get absolut path", err)
+	utils.Bail("failed to get absolute path", err)
 	return s
 }
 
@@ -36,7 +36,12 @@ func getworkdirctr() int {
 func recreate() {
 	wd_lock.Lock()
 	defer wd_lock.Unlock()
-	utils.RecreateSafely(workdir())
+	if recreated {
+		return
+	}
+	err := utils.RecreateSafely(workdir())
+	utils.Bail("failed to recreate workdir", err)
+	recreated = true
 }
 
 type LocalRepo struct {

@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	pb "golang.conradwood.net/apis/gitbuilder"
+	_ "golang.conradwood.net/gitbuilder/appinfo"
 	"golang.conradwood.net/gitbuilder/builder"
 	"golang.conradwood.net/go-easyops/authremote"
 	"golang.conradwood.net/go-easyops/utils"
@@ -19,6 +20,7 @@ var (
 	f_buildnumber = flag.Uint("build", 0, "buildnumber to use for this build")
 	f_commitid    = flag.String("commitid", "", "commit id to set repository at for build")
 	f_name        = flag.String("name", "", "repo and artefact name")
+	f_repoid      = flag.Uint("repoid", 0, "repository id for scripts")
 )
 
 func main() {
@@ -37,10 +39,15 @@ func main() {
 				RepoID:       1,
 				RepoName:     "test_reponame",
 				ArtefactName: "test_artefact",
+				Build:        uint64(*f_buildnumber),
 			},
 		)
+		br := &builder.BuildRules{
+			Builds: []string{"STANDARD_GO"},
+		}
+		//br.Builds = []string{"GO_MODULES"}
 		utils.Bail("failed to get builder", err)
-		err = b.BuildAll(ctx)
+		err = b.BuildWithRules(ctx, br)
 		utils.Bail("failed to build", err)
 		os.Exit(0)
 	}
@@ -50,6 +57,7 @@ func main() {
 		GitURL:       *f_url,
 		CommitID:     *f_commitid,
 		BuildNumber:  uint64(*f_buildnumber),
+		RepositoryID: uint64(*f_repoid),
 	}
 	stream, err := echoClient.Build(ctx, empty)
 	utils.Bail("Failed to ping server", err)

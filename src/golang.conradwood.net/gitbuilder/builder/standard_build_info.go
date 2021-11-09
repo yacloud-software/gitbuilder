@@ -5,8 +5,12 @@ type StandardBuildInfo struct {
 	RepoID       uint64
 	RepoName     string
 	ArtefactName string
+	Build        uint64
 }
 
+func (s *StandardBuildInfo) BuildNumber() uint64 {
+	return s.Build
+}
 func (s *StandardBuildInfo) CommitID() string {
 	return s.Commit
 }

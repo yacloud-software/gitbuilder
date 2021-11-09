@@ -2,6 +2,7 @@ package builder
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	am "golang.conradwood.net/apis/auth"
 	"golang.conradwood.net/go-easyops/auth"
@@ -15,7 +16,21 @@ import (
 	"strings"
 )
 
+var (
+	gocache = flag.String("override_gocache", "", "if set use this as gocache. do not use in production")
+)
+
+// given a scriptname, e.g. "autobuild.sh" or "go-build.sh" tries to find the script.
+// autobuild.sh is the only which will be searched for in the working directory (legacy requirement)
 func (b *Builder) findscript(scriptname string) string {
+	if scriptname == "autobuild.sh" {
+		res := b.GetRepoPath() + "/autobuild.sh"
+		if !utils.FileExists(res) {
+			b.Printf("autobuild.sh configured but not found\n")
+			return ""
+		}
+		return res
+	}
 	cwd, err := os.Getwd()
 	if err != nil {
 		b.Printf("Unable to find current working directory: %s\n", err)
@@ -123,8 +138,6 @@ LC_CTYPE=en_GB.UTF-8
 
 	fmt.Printf("Bindir: \"%s\"\n", bindir)
 	os.MkdirAll(bindir+"/gobin", 0777)
-	os.MkdirAll(bindir+"/gocache", 0777)
-	os.MkdirAll(bindir+"/gotmp", 0777)
 	res = append(res, fmt.Sprintf("BUILD_NUMBER=%d", b.buildid))
 	res = append(res, fmt.Sprintf("GOPATH=%s", absdir))
 	res = append(res, fmt.Sprintf("HOME=%s", absdir))
@@ -137,11 +150,30 @@ LC_CTYPE=en_GB.UTF-8
 	res = append(res, fmt.Sprintf("BUILD_TIMESTAMP=%d", b.timestamp.Unix()))
 	res = append(res, fmt.Sprintf("GIT_BRANCH=%s", "master"))
 	res = append(res, fmt.Sprintf("GOBIN=%s/gobin", bindir))
-	res = append(res, fmt.Sprintf("GOCACHE=%s/gocache", bindir))
-	res = append(res, fmt.Sprintf("GOTMPDIR=%s/gotmp", bindir))
 	res = append(res, fmt.Sprintf("REGISTRY=%s", cmdline.GetClientRegistryAddress()))
 	//	res = append(res, fmt.Sprintf("SCRIPTDIR=%s", scriptsdir))
+	if *gocache == "" {
+		res = append(res, fmt.Sprintf("GOTMPDIR=%s/gotmp", bindir))
+		res = append(res, fmt.Sprintf("GOCACHE=%s/gocache", bindir))
+		os.MkdirAll(bindir+"/gocache", 0777)
+		os.MkdirAll(bindir+"/gotmp", 0777)
+	} else {
+		gc, err := filepath.Abs(*gocache)
+		utils.Bail("failed to absolute gocache", err)
+		res = append(res, fmt.Sprintf("GOCACHE=%s/gocache", gc))
+		res = append(res, fmt.Sprintf("GOMODCACHE=%s/gomodcache", gc))
+		res = append(res, fmt.Sprintf("GOTMP=%s/gotmp", gc))
+		res = append(res, fmt.Sprintf("GOTMPDIR=%s/gotmp", gc))
+		os.MkdirAll(fmt.Sprintf("%s/gocache", gc), 0777)
+		os.MkdirAll(fmt.Sprintf("%s/gomodcache", gc), 0777)
+		os.MkdirAll(fmt.Sprintf("%s/gotmp", gc), 0777)
+	}
 
+	// make LDFLAGS="-ldflags '-X golang.conradwood.net/go-easyops/appinfo.LD_Number=56'"
+	// make LDFLAGS="-ldflags '-X golang.conradwood.net/go-easyops/appinfo.LD_Number=56 -X golang.conradwood.net/go-easyops/appinfo.LD_Timestamp=89'"
+	ldflags := `-ldflags '-X golang.conradwood.net/go-easyops/appinfo.LD_Number=%d -X golang.conradwood.net/go-easyops/appinfo.LD_Description=%s -X golang.conradwood.net/go-easyops/appinfo.LD_Timestamp=%d -X golang.conradwood.net/go-easyops/appinfo.LD_RepositoryID=%d -X golang.conradwood.net/go-easyops/appinfo.LD_RepositoryName=%s -X golang.conradwood.net/go-easyops/appinfo.LD_CommitID=%s' `
+	ldflags = fmt.Sprintf(ldflags, b.buildid, "gitbuilder", b.timestamp.Unix(), b.buildinfo.RepositoryID(), b.buildinfo.RepositoryName(), b.buildinfo.CommitID())
+	res = append(res, fmt.Sprintf("GO_LDFLAGS=%s", ldflags))
 	return res
 }
 func (b *Builder) addContextEnv(ctx context.Context, cmd *exec.Cmd) error {
@@ -168,13 +200,13 @@ func (b *Builder) addContextEnv(ctx context.Context, cmd *exec.Cmd) error {
 	if u != nil {
 		cmd.Env = append(cmd.Env, fmt.Sprintf("GE_USER_EMAIL=%s", u.Email))
 		cmd.Env = append(cmd.Env, fmt.Sprintf("GE_USER_ID=%s", u.ID))
-		/*
-			tr, err := GetAuthManagerClient().GetTokenForMe(ctx, &am.GetTokenRequest{DurationSecs: 300})
-			if err != nil {
-				fmt.Printf("unable to get authentication token for external script(s): %s\n", utils.ErrorString(err))
-				return err
-			}
-		*/
+		tr, err := GetAuthManagerClient().GetTokenForMe(ctx, &am.GetTokenRequest{DurationSecs: 300})
+		if err != nil {
+			fmt.Printf("unable to get authentication token for external script(s): %s\n", utils.ErrorString(err))
+			return err
+		}
+		cmd.Env = append(cmd.Env, fmt.Sprintf("PROXY_USER=%s@token.yacloud.eu", u.ID))
+		cmd.Env = append(cmd.Env, fmt.Sprintf("PROXY_PASSWORD=%s", tr.Token))
 
 	}
 	return nil
