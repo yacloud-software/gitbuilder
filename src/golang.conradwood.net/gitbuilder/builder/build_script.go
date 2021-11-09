@@ -87,6 +87,7 @@ func (b *Builder) buildscript(ctx context.Context, fscript, target_arch, target_
 	if err != nil {
 		return err
 	}
+	b.Printf("Script \"%s\" completed successfully\n", fscript)
 	return nil
 }
 func (b *Builder) pipeOutput(scriptname string, rc io.ReadCloser) {
