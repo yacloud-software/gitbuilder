@@ -5,8 +5,6 @@ go 1.17
 require (
 	golang.conradwood.net/apis/auth v1.1.1417
 	golang.conradwood.net/apis/gitbuilder v1.1.1417
-	golang.conradwood.net/git v0.0.0-00010101000000-000000000000
-	golang.conradwood.net/go-easyops v0.1.10150
 	google.golang.org/grpc v1.42.0
 )
 
@@ -29,6 +27,7 @@ require (
 	golang.conradwood.net/apis/objectstore v1.1.1417 // indirect
 	golang.conradwood.net/apis/registry v1.1.1417 // indirect
 	golang.conradwood.net/apis/rpcinterceptor v1.1.1417 // indirect
+	golang.conradwood.net/go-easyops v0.1.10204 // indirect
 	golang.org/x/net v0.0.0-20211105192438-b53810dc28af // indirect
 	golang.org/x/sys v0.0.0-20211107104306-e0b2ad06fe42 // indirect
 	golang.org/x/text v0.3.6 // indirect
@@ -36,4 +35,3 @@ require (
 	google.golang.org/protobuf v1.26.0 // indirect
 )
 
-replace golang.conradwood.net/git => ../git

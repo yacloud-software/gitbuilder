@@ -51,7 +51,7 @@ func (b *Builder) readBuildrules() error {
 		} else if sp[0] == "BUILDS" {
 			gotBuilds = true
 			for _, bs := range strings.Split(sp[1], ",") {
-				rules.Builds = append(rules.Builds, bs)
+				rules.Builds = append(rules.Builds, strings.Trim(bs, " "))
 			}
 		} else if sp[0] == "TARGETS" {
 			for _, bs := range strings.Split(sp[1], ",") {
