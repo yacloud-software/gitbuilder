@@ -60,20 +60,23 @@ func (g goversion) findFilesModule(ctx context.Context) ([]string, error) {
 
 // find files as used by the non-module vendor style repositories
 func (g goversion) findFilesVendor() []string {
+	src := g.brunner.GetRepoPath() + "/src"
+	if !utils.FileExists(src) {
+		return nil
+	}
 	tests := []string{
+		"src/golang.conradwood.net/go-easyops/cmdline/myversion.go",
 		"src/golang.conradwood.net/vendor/golang.conradwood.net/go-easyops/cmdline/appversion.go",
 		"src/golang.singingcat.net/vendor/golang.conradwood.net/go-easyops/cmdline/appversion.go",
 		"vendor/golang.conradwood.net/go-easyops/cmdline/appversion.go",
 	}
 	var res []string
-	for _, t := range tests {
-		if utils.FileExists(t) {
-			res = append(res, t)
+	for _, rt := range tests {
+		if utils.FileExists(rt) {
+			res = append(res, rt)
+		} else if utils.FileExists(g.brunner.GetRepoPath() + "/" + rt) {
+			res = append(res, g.brunner.GetRepoPath()+"/"+rt)
 		}
-	}
-	src := g.brunner.GetRepoPath() + "/src"
-	if !utils.FileExists(src) {
-		return nil
 	}
 	files, err := ioutil.ReadDir(src)
 	utils.Bail("failed to read directory", err)
