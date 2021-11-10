@@ -35,4 +35,3 @@ require (
 	google.golang.org/protobuf v1.26.0 // indirect
 )
 
-replace golang.conradwood.net/git => ../git
