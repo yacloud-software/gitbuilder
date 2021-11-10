@@ -27,11 +27,10 @@ require (
 	golang.conradwood.net/apis/objectstore v1.1.1417 // indirect
 	golang.conradwood.net/apis/registry v1.1.1417 // indirect
 	golang.conradwood.net/apis/rpcinterceptor v1.1.1417 // indirect
-	golang.conradwood.net/go-easyops v0.1.10204 // indirect
+	golang.conradwood.net/go-easyops v0.1.10219 // indirect
 	golang.org/x/net v0.0.0-20211105192438-b53810dc28af // indirect
 	golang.org/x/sys v0.0.0-20211107104306-e0b2ad06fe42 // indirect
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
 )
-

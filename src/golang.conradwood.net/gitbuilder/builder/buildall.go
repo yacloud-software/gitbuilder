@@ -18,13 +18,7 @@ func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) er
 	}
 	target_arch := "amd64"
 	target_os := "linux"
-	/*
-		// TODO: make this a coderunner
-		err := b.buildscript(ctx, b.findscript("clean-build.sh"), target_arch, target_os)
-		if err != nil {
-			return err
-		}
-	*/
+
 	for _, rulename := range buildrules.Builds {
 		b.Printf("rule: \"%s\"\n", rulename)
 		tagname := buildrules.CheckBuildType(rulename)
@@ -52,13 +46,6 @@ func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) er
 			}
 		}
 	}
-	/*
-		// ** now create the dist and upload it
-		// TODO: make this a coderunner
-		err = b.buildscript(ctx, b.findscript("dist.sh"), target_arch, target_os)
-		if err != nil {
-			return err
-		}
-	*/
+
 	return nil
 }

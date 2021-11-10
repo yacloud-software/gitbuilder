@@ -17,6 +17,7 @@ var (
 		"AUTOBUILD_SH":    []string{"autobuild.sh"},
 		"CLEAN":           []string{"clean-build.sh"},
 		"DIST":            []string{"dist.sh"},
+		"GO_VERSION":      []string{"coderunner-go-version"},
 		"GO_MODULES":      []string{"coderunner-gomodule"},
 	}
 )
