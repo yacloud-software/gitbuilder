@@ -39,9 +39,10 @@ func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) er
 				continue
 			}
 
-			err = b.buildscript(ctx, b.findscript(scriptname), target_arch, target_os)
+			bscript := b.findscript(scriptname)
+			err = b.buildscript(ctx, bscript, target_arch, target_os)
 			if err != nil {
-				b.Printf("Script failed: %s\n", utils.ErrorString(err))
+				b.Printf("Script \"%s\" (as \"%s\") failed: %s\n", bscript, scriptname, utils.ErrorString(err))
 				return err
 			}
 		}
