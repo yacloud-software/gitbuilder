@@ -21,12 +21,12 @@ func (g gomodule) Run(ctx context.Context, b brunner) error {
 
 	// find go.mod files:
 	d := b.GetRepoPath() + "/src/"
-	fmt.Printf("Searching for go.mod files in \"%s\"\n", d)
+	b.Printf("Searching for go.mod files in \"%s\"\n", d)
 	files, err := FindFiles(ctx, d, "go.mod")
 	if err != nil {
 		return err
 	}
-	fmt.Printf("found %d go.mod files\n", len(files))
+	b.Printf("found %d go.mod files\n", len(files))
 	for _, f := range files {
 		pkg := filepath.Dir(f)
 		if strings.HasSuffix(pkg, "/tests") || strings.HasSuffix(pkg, "/test") {
@@ -42,7 +42,7 @@ func (g gomodule) Run(ctx context.Context, b brunner) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf("FILE: %s, package: \"%s\"\n", f, pkg)
+		b.Printf("FILE: %s, package: \"%s\"\n", f, pkg)
 		err = createZip(td+"mod.zip", b, pkg, version)
 		if err != nil {
 			return err
@@ -58,7 +58,7 @@ func createZip(zipfile string, b brunner, pkg string, version string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("zip file \"%s\" created...\n", zipfile)
+	b.Printf("zip file \"%s\" created...\n", zipfile)
 	w := zip.NewWriter(zf)
 	err = addzipfiles(w, b, pkg, "", version)
 	if err != nil {
@@ -73,7 +73,7 @@ func createZip(zipfile string, b brunner, pkg string, version string) error {
 
 func addzipfiles(zf *zip.Writer, b brunner, pkg string, dir, version string) error {
 	d := b.GetRepoPath() + "/src/" + pkg + "/" + dir
-	fmt.Printf("Adding files in \"%s\"\n", d)
+	b.Printf("Adding files in \"%s\"\n", d)
 	files, err := ioutil.ReadDir(d)
 	if err != nil {
 		return err
@@ -89,7 +89,7 @@ func addzipfiles(zf *zip.Writer, b brunner, pkg string, dir, version string) err
 		fname := dir + "/" + f.Name()
 		fname = strings.TrimPrefix(fname, "/")
 		zname := pkg + "@" + version + "/" + fname
-		fmt.Printf("  adding \"%s\" as \"%s\"\n", fname, zname)
+		b.Printf("  adding \"%s\" as \"%s\"\n", fname, zname)
 		b, err := utils.ReadFile(d + "/" + f.Name())
 		if err != nil {
 			return err
