@@ -151,6 +151,7 @@ LC_CTYPE=en_GB.UTF-8
 	res = append(res, fmt.Sprintf("BUILD_TIMESTAMP=%d", b.timestamp.Unix()))
 	res = append(res, fmt.Sprintf("GIT_BRANCH=%s", "master"))
 	res = append(res, fmt.Sprintf("GOBIN=%s/gobin", bindir))
+	res = append(res, "GOSUMDB=off")
 	res = append(res, fmt.Sprintf("REGISTRY=%s", cmdline.GetClientRegistryAddress()))
 	//	res = append(res, fmt.Sprintf("SCRIPTDIR=%s", scriptsdir))
 	if *gocache == "" {
@@ -198,7 +199,9 @@ func (b *Builder) addContextEnv(ctx context.Context, cmd *exec.Cmd) error {
 		}
 	}
 	cmd.Env = append(cmd.Env, ncs)
-	if u != nil {
+	if u == nil {
+		fmt.Printf("executing without a user account!\n")
+	} else {
 		cmd.Env = append(cmd.Env, fmt.Sprintf("GE_USER_EMAIL=%s", u.Email))
 		cmd.Env = append(cmd.Env, fmt.Sprintf("GE_USER_ID=%s", u.ID))
 		tr, err := GetAuthManagerClient().GetTokenForMe(ctx, &am.GetTokenRequest{DurationSecs: 300})
@@ -208,6 +211,7 @@ func (b *Builder) addContextEnv(ctx context.Context, cmd *exec.Cmd) error {
 		}
 		cmd.Env = append(cmd.Env, fmt.Sprintf("PROXY_USER=%s@token.yacloud.eu", u.ID))
 		cmd.Env = append(cmd.Env, fmt.Sprintf("PROXY_PASSWORD=%s", tr.Token))
+		cmd.Env = append(cmd.Env, fmt.Sprintf("GOPROXY=https://%s@token.yacloud.eu:%s@golang.conradwood.net,direct", u.ID, tr.Token))
 
 	}
 	return nil
