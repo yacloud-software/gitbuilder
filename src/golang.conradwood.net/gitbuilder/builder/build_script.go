@@ -75,7 +75,7 @@ func (b *Builder) buildscript(ctx context.Context, fscript, target_arch, target_
 	fn := filepath.Base(fscript)
 	go b.pipeOutput(fn, ep)
 	go b.pipeOutput(fn, op)
-	cmd.Env = b.env()
+	cmd.Env = b.env(ctx)
 	b.addContextEnv(ctx, cmd)
 	cmd.Env = append(cmd.Env, fmt.Sprintf("TARGET_ARCH=%s", target_arch))
 	cmd.Env = append(cmd.Env, fmt.Sprintf("TARGET_OS=%s", target_os))
@@ -106,7 +106,12 @@ func (b *Builder) pipeOutput(scriptname string, rc io.ReadCloser) {
 
 }
 
-func (b *Builder) env() []string {
+func (b *Builder) env(ctx context.Context) []string {
+	u := auth.GetUser(ctx)
+	if u == nil {
+		fmt.Printf("executing without a user account!\n")
+		return nil
+	}
 	// standard environment variables...
 	std := `
 JAVA_HOME=/etc/java-home
@@ -161,6 +166,7 @@ LC_CTYPE=en_GB.UTF-8
 		os.MkdirAll(bindir+"/gotmp", 0777)
 	} else {
 		gc, err := filepath.Abs(*gocache)
+		gc = gc + fmt.Sprintf("/%s/", u.ID) // must have seperate caches per user, so we force download of go modules per user
 		utils.Bail("failed to absolute gocache", err)
 		res = append(res, fmt.Sprintf("GOCACHE=%s/gocache", gc))
 		res = append(res, fmt.Sprintf("GOMODCACHE=%s/gomodcache", gc))
@@ -199,21 +205,18 @@ func (b *Builder) addContextEnv(ctx context.Context, cmd *exec.Cmd) error {
 		}
 	}
 	cmd.Env = append(cmd.Env, ncs)
-	if u == nil {
-		fmt.Printf("executing without a user account!\n")
-	} else {
-		cmd.Env = append(cmd.Env, fmt.Sprintf("GE_USER_EMAIL=%s", u.Email))
-		cmd.Env = append(cmd.Env, fmt.Sprintf("GE_USER_ID=%s", u.ID))
-		tr, err := GetAuthManagerClient().GetTokenForMe(ctx, &am.GetTokenRequest{DurationSecs: 300})
-		if err != nil {
-			fmt.Printf("unable to get authentication token for external script(s): %s\n", utils.ErrorString(err))
-			return err
-		}
-		cmd.Env = append(cmd.Env, fmt.Sprintf("PROXY_USER=%s@token.yacloud.eu", u.ID))
-		cmd.Env = append(cmd.Env, fmt.Sprintf("PROXY_PASSWORD=%s", tr.Token))
-		cmd.Env = append(cmd.Env, fmt.Sprintf("GOPROXY=https://%s@token.yacloud.eu:%s@golang.conradwood.net,direct", u.ID, tr.Token))
 
+	cmd.Env = append(cmd.Env, fmt.Sprintf("GE_USER_EMAIL=%s", u.Email))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("GE_USER_ID=%s", u.ID))
+	tr, err := GetAuthManagerClient().GetTokenForMe(ctx, &am.GetTokenRequest{DurationSecs: 300})
+	if err != nil {
+		fmt.Printf("unable to get authentication token for external script(s): %s\n", utils.ErrorString(err))
+		return err
 	}
+	cmd.Env = append(cmd.Env, fmt.Sprintf("PROXY_USER=%s@token.yacloud.eu", u.ID))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("PROXY_PASSWORD=%s", tr.Token))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("GOPROXY=https://%s@token.yacloud.eu:%s@golang.conradwood.net,direct", u.ID, tr.Token))
+
 	return nil
 }
 func GetAuthManagerClient() am.AuthManagerServiceClient {
