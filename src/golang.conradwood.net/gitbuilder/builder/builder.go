@@ -3,6 +3,7 @@ package builder
 import (
 	"fmt"
 	"golang.conradwood.net/gitbuilder/buildinfo"
+	"golang.conradwood.net/gitbuilder/common"
 	"io"
 	"time"
 )
@@ -29,6 +30,7 @@ type Builder struct {
 	buildid    uint64 // for the build management system
 	timestamp  time.Time
 	buildinfo  buildinfo.BuildInfo // for the scripts and coderunners
+	printer    *common.LinePrinter
 }
 
 func (b *Builder) BuildInfo() buildinfo.BuildInfo {
@@ -40,6 +42,7 @@ func NewBuilder(repopath string, stdout io.Writer, buildid uint64, bi buildinfo.
 		buildid:   buildid,
 		buildinfo: bi,
 		timestamp: time.Now(),
+		printer:   &common.LinePrinter{MaxLineLength: 256, Prefix: fmt.Sprintf("[builder %s] ", bi.RepositoryName())},
 	}
 	err := b.readBuildrules()
 	if err != nil {
@@ -50,7 +53,7 @@ func NewBuilder(repopath string, stdout io.Writer, buildid uint64, bi buildinfo.
 func (b *Builder) Printf(txt string, args ...interface{}) {
 	s := fmt.Sprintf("[builder %s] ", b.buildinfo.RepositoryName())
 	s = fmt.Sprintf(s+txt, args...)
-	fmt.Print(s)
+	b.printer.Printf(txt, args...)
 	if b.stdout != nil {
 		b.stdout.Write([]byte(s))
 	}
