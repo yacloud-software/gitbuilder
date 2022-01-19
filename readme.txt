@@ -14,6 +14,9 @@ to compile singingcat firmware:
 apt-get install gcc-arm-none-eabi gcc 
 needs "binpatch" in /usr/local/bin
 
+to compile espressif firmware:
+/srv/singingcat/esp32
+apt-get install cmake
 
 
 ==================== /etc/gitconfig ================
