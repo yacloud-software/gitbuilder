@@ -16,6 +16,9 @@ type LinePrinter struct {
 
 func (l *LinePrinter) Printf(format string, args ...interface{}) {
 	s := fmt.Sprintf(format, args...)
+	l.Print(s)
+}
+func (l *LinePrinter) Print(s string) {
 	// our own split function, because we must retain the "\n"
 	sx := l.lines(s)
 	for _, line := range sx {
