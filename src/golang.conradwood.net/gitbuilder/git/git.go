@@ -14,10 +14,11 @@ import (
 )
 
 var (
-	wd_lock     sync.Mutex
-	workdir_ctr = 0
-	f_workdir   = flag.String("workdir", "/tmp/gitbuilder", "workdir for repos")
-	recreated   = false
+	with_recursive = flag.Bool("git_with_recursive", false, "if true use git-clone --recursive")
+	wd_lock        sync.Mutex
+	workdir_ctr    = 0
+	f_workdir      = flag.String("workdir", "/tmp/gitbuilder", "workdir for repos")
+	recreated      = false
 )
 
 func workdir() string {
@@ -92,7 +93,13 @@ func (lr *LocalRepo) Clone(ctx context.Context) error {
 	dir := lr.workdir
 	os.MkdirAll(dir, 0777)
 	lr.Printf("Cloning git repo %s into %s...\n", lr.url, dir)
-	out, err := l.SafelyExecuteWithDir([]string{"git", "clone", lr.url, "repo"}, dir, nil)
+	var err error
+	var out string
+	if *with_recursive {
+		out, err = l.SafelyExecuteWithDir([]string{"git", "clone", "--recurse-submodules", lr.url, "repo"}, dir, nil)
+	} else {
+		out, err = l.SafelyExecuteWithDir([]string{"git", "clone", lr.url, "repo"}, dir, nil)
+	}
 	if err != nil {
 		lr.Printf("Error (%s). Git-clone %s said: %s\n", err, lr.url, out)
 		return err
