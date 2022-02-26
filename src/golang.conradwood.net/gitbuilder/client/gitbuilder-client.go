@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"golang.conradwood.net/apis/common"
 	pb "golang.conradwood.net/apis/gitbuilder"
 	_ "golang.conradwood.net/gitbuilder/appinfo"
 	"golang.conradwood.net/gitbuilder/builder"
@@ -24,6 +25,7 @@ var (
 	f_commitid    = flag.String("commitid", "", "commit id to set repository at for build")
 	f_name        = flag.String("name", "", "repo and artefact name")
 	f_repoid      = flag.Uint("repoid", 0, "repository id for scripts")
+	status        = flag.Bool("status", false, "print status of gitbuilder server")
 )
 
 func main() {
@@ -35,6 +37,10 @@ func main() {
 	authremote.Context()
 	ctx := authremote.ContextWithTimeout(time.Duration(5) * time.Minute)
 	ctx = addTags(ctx)
+	if *status {
+		printStatus(ctx)
+		os.Exit(0)
+	}
 	if *f_dir != "" {
 		b, err := builder.NewBuilder(*f_dir, nil, uint64(*f_buildnumber),
 			&builder.StandardBuildInfo{
@@ -101,4 +107,15 @@ func addTags(ctx context.Context) context.Context {
 		rtags[tk] = tv
 	}
 	return authremote.DerivedContextWithRouting(ctx, rtags)
+}
+func printStatus(ctx context.Context) {
+	repolist, err := echoClient.GetLocalRepos(ctx, &common.Void{})
+	utils.Bail("failed to get repos", err)
+	t := &utils.Table{}
+	t.AddHeaders("WorkDir")
+	for _, repo := range repolist.Repos {
+		t.AddString(repo.WorkDir)
+		t.NewRow()
+	}
+	fmt.Println(t.ToPrettyString())
 }
