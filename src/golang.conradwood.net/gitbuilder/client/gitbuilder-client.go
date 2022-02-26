@@ -112,9 +112,16 @@ func printStatus(ctx context.Context) {
 	repolist, err := echoClient.GetLocalRepos(ctx, &common.Void{})
 	utils.Bail("failed to get repos", err)
 	t := &utils.Table{}
-	t.AddHeaders("WorkDir")
+	t.AddHeaders("WorkDir", "inuse", "created", "released")
 	for _, repo := range repolist.Repos {
 		t.AddString(repo.WorkDir)
+		t.AddBool(repo.InUse)
+		t.AddTimestamp(repo.Created)
+		if repo.InUse {
+			t.AddString("---")
+		} else {
+			t.AddTimestamp(repo.Released)
+		}
 		t.NewRow()
 	}
 	fmt.Println(t.ToPrettyString())

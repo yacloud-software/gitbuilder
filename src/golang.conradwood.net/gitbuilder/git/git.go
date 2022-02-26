@@ -24,6 +24,9 @@ var (
 	recreated      = false
 )
 
+func init() {
+	go cleaner()
+}
 func workdir() string {
 	s, err := filepath.Abs(*f_workdir)
 	utils.Bail("failed to get absolute path", err)
@@ -80,6 +83,8 @@ func GetLocalRepo(ctx context.Context, url string, fetchurls []string, stdout io
 	return lr, nil
 }
 func GetLocalRepos() *pb.LocalRepoList {
+	wd_lock.Lock()
+	defer wd_lock.Unlock()
 	res := &pb.LocalRepoList{}
 	for _, r := range repos {
 		lr := &pb.LocalRepo{
