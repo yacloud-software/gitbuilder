@@ -31,6 +31,7 @@ func clean() {
 			nr = append(nr, r)
 			continue
 		}
+		fmt.Printf("Deleted \"%s\"\n", r.workdir)
 	}
 	repos = nr
 }
