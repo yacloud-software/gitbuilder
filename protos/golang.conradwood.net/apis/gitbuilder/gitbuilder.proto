@@ -20,11 +20,24 @@ message BuildResponse {
   bool Success=4; // if true the build succeeded
   string LogMessage=5; // the builder sends back the logmessage of the commit it built
 }
+message LocalRepo {
+  string URL=1;
+  repeated string FetchURLs=2;
+  bool InUse=3;
+  string WorkDir=4;
+  uint32 Created=5;
+  uint32 Released=6;
+}
+message LocalRepoList {
+  repeated LocalRepo Repos=1;
+}
 // this is doing the actual build. It checksout a git repository, runs the build
 // and uploads the artefacts
 service GitBuilder {
   // build something. Note that this RPC might take several minutes to complete
   rpc Build(BuildRequest) returns (stream BuildResponse);
+  // get information about the repos on disk
+  rpc GetLocalRepos(common.Void) returns (LocalRepoList);
 }
 
 
