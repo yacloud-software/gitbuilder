@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	golang.conradwood.net/apis/auth v1.1.1588
-	golang.conradwood.net/apis/gitbuilder v1.1.1417
+	golang.conradwood.net/apis/gitbuilder v0.0.0-00010101000000-000000000000
 	golang.conradwood.net/go-easyops v0.1.11854
 	google.golang.org/grpc v1.44.0
 )
@@ -34,3 +34,5 @@ require (
 	google.golang.org/genproto v0.0.0-20220208230804-65c12eb4c068 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 )
+
+replace golang.conradwood.net/apis/gitbuilder => ../../golang.conradwood.net/apis/gitbuilder

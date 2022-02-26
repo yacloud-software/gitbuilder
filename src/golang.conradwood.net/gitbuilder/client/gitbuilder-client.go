@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	pb "golang.conradwood.net/apis/gitbuilder"
@@ -10,10 +11,12 @@ import (
 	"golang.conradwood.net/go-easyops/utils"
 	"io"
 	"os"
+	"strings"
 	"time"
 )
 
 var (
+	tags          = flag.String("tags", "", "routing tags to choose")
 	echoClient    pb.GitBuilderClient
 	f_url         = flag.String("url", "", "git url to build")
 	f_dir         = flag.String("dir", "", "if not-empty, use this local working copy to build locally instead of calling the server")
@@ -31,7 +34,7 @@ func main() {
 	// a context with authentication
 	authremote.Context()
 	ctx := authremote.ContextWithTimeout(time.Duration(5) * time.Minute)
-
+	ctx = addTags(ctx)
 	if *f_dir != "" {
 		b, err := builder.NewBuilder(*f_dir, nil, uint64(*f_buildnumber),
 			&builder.StandardBuildInfo{
@@ -79,4 +82,23 @@ func main() {
 
 	fmt.Printf("Done.\n")
 	os.Exit(0)
+}
+func addTags(ctx context.Context) context.Context {
+	if *tags == "" {
+		return ctx
+	}
+	rtags := make(map[string]string)
+	vals := strings.Split(*tags, ",")
+	for _, v := range vals {
+		kv := strings.SplitN(v, "=", 2)
+		if len(kv) != 2 {
+			s := fmt.Sprintf("Invalid keyvalue tag: \"%s\" - it splits into %d parts instead of 2\n", v, len(kv))
+			panic(s)
+		}
+		tk := kv[0]
+		tv := kv[1]
+		fmt.Printf("Adding tag \"%s\" with value \"%s\"\n", tk, tv)
+		rtags[tk] = tv
+	}
+	return authremote.DerivedContextWithRouting(ctx, rtags)
 }

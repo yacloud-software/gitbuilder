@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
+	"golang.conradwood.net/apis/common"
 	pb "golang.conradwood.net/apis/gitbuilder"
 	_ "golang.conradwood.net/gitbuilder/appinfo"
 	"golang.conradwood.net/gitbuilder/builder"
@@ -42,7 +44,9 @@ func main() {
 /************************************
 * grpc functions
 ************************************/
-
+func (e *echoServer) GetLocalRepos(ctx context.Context, req *common.Void) (*pb.LocalRepoList, error) {
+	return git.GetLocalRepos(), nil
+}
 func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) error {
 	fmt.Printf("Building:\n")
 	fmt.Printf("-url=\"%s\" -commitid=\"%s\" -build=%d -repoid=%d -name=%s\n", req.GitURL, req.CommitID, req.BuildNumber, req.RepositoryID, req.RepoName)
