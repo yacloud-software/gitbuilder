@@ -106,7 +106,7 @@ func addTags(ctx context.Context) context.Context {
 		fmt.Printf("Adding tag \"%s\" with value \"%s\"\n", tk, tv)
 		rtags[tk] = tv
 	}
-	return authremote.DerivedContextWithRouting(ctx, rtags)
+	return authremote.DerivedContextWithRouting(ctx, rtags, false)
 }
 func printStatus(ctx context.Context) {
 	repolist, err := echoClient.GetLocalRepos(ctx, &common.Void{})
