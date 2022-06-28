@@ -123,9 +123,9 @@ func (lr *LocalRepo) Clone(ctx context.Context) error {
 	var err error
 	var out string
 	if *with_recursive {
-		out, err = l.SafelyExecuteWithDir([]string{"git", "clone", "--recurse-submodules", lr.url, "repo"}, dir, nil)
+		out, err = l.SafelyExecuteWithDir([]string{"git", "clone", "--depth", "3", "--recurse-submodules", lr.url, "repo"}, dir, nil)
 	} else {
-		out, err = l.SafelyExecuteWithDir([]string{"git", "clone", lr.url, "repo"}, dir, nil)
+		out, err = l.SafelyExecuteWithDir([]string{"git", "clone", "--depth", "3", lr.url, "repo"}, dir, nil)
 	}
 	if err != nil {
 		lr.Printf("Error (%s). Git-clone %s said: %s\n", err, lr.url, out)
