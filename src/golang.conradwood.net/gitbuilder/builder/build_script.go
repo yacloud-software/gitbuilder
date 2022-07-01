@@ -17,7 +17,8 @@ import (
 )
 
 var (
-	gocache = flag.String("override_gocache", "", "if set use this as gocache. do not use in production")
+	maxprocs = flag.Int("maxprocs", 4, "max processes during compile/check")
+	gocache  = flag.String("override_gocache", "", "if set use this as gocache. do not use in production")
 )
 
 // given a scriptname, e.g. "autobuild.sh" or "go-build.sh" tries to find the script.
@@ -156,6 +157,7 @@ LC_CTYPE=en_GB.UTF-8
 	res = append(res, fmt.Sprintf("BUILD_TIMESTAMP=%d", b.timestamp.Unix()))
 	res = append(res, fmt.Sprintf("GIT_BRANCH=%s", "master"))
 	res = append(res, fmt.Sprintf("GOBIN=%s/gobin", bindir))
+	res = append(res, fmt.Sprintf("GOMAXPROCS=%d", *maxprocs))
 	res = append(res, "GOSUMDB=off")
 	res = append(res, fmt.Sprintf("REGISTRY=%s", cmdline.GetClientRegistryAddress()))
 	//	res = append(res, fmt.Sprintf("SCRIPTDIR=%s", scriptsdir))
