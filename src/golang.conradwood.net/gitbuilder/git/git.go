@@ -17,7 +17,7 @@ import (
 
 var (
 	repos          []*LocalRepo
-	with_recursive = flag.Bool("git_with_recursive", false, "if true use git-clone --recursive")
+	with_recursive = flag.Bool("git_with_recursive", true, "if true use git-clone --recursive")
 	wd_lock        sync.Mutex
 	workdir_ctr    = 0
 	f_workdir      = flag.String("workdir", "/tmp/gitbuilder", "workdir for repos")
