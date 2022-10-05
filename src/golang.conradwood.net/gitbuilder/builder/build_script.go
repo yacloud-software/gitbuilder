@@ -17,8 +17,10 @@ import (
 )
 
 var (
-	maxprocs = flag.Int("maxprocs", 4, "max processes during compile/check")
-	gocache  = flag.String("override_gocache", "", "if set use this as gocache. do not use in production")
+	goproxyhost   = flag.String("goproxyhost", "golang.conradwood.net", "set the goproxy to this host")
+	goproxydirect = flag.Bool("goproxy_direct", true, "if true, add ',direct' to goproxy")
+	maxprocs      = flag.Int("maxprocs", 4, "max processes during compile/check")
+	gocache       = flag.String("override_gocache", "", "if set use this as gocache. do not use in production")
 )
 
 // given a scriptname, e.g. "autobuild.sh" or "go-build.sh" tries to find the script.
@@ -217,8 +219,13 @@ func (b *Builder) addContextEnv(ctx context.Context, cmd *exec.Cmd) error {
 	}
 	cmd.Env = append(cmd.Env, fmt.Sprintf("PROXY_USER=%s@token.yacloud.eu", u.ID))
 	cmd.Env = append(cmd.Env, fmt.Sprintf("PROXY_PASSWORD=%s", tr.Token))
-	cmd.Env = append(cmd.Env, fmt.Sprintf("GOPROXY=https://%s@token.yacloud.eu:%s@golang.conradwood.net,direct", u.ID, tr.Token))
-
+	if *goproxyhost != "" {
+		s := ""
+		if *goproxydirect {
+			s = ",direct"
+		}
+		cmd.Env = append(cmd.Env, fmt.Sprintf("GOPROXY=https://%s@token.yacloud.eu:%s@%s%s", u.ID, tr.Token, *goproxyhost, s))
+	}
 	return nil
 }
 func GetAuthManagerClient() am.AuthManagerServiceClient {
