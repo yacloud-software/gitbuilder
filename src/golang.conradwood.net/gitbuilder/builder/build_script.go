@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	goproxyhost   = flag.String("goproxyhost", "golang.conradwood.net", "set the goproxy to this host")
-	goproxydirect = flag.Bool("goproxy_direct", true, "if true, add ',direct' to goproxy")
+	goproxyhost   = flag.String("goproxyhost", "goproxy.conradwood.net", "set the goproxy to this host (e.g. golang.conradwood.net)")
+	goproxydirect = flag.Bool("goproxy_direct", false, "if true, add ',direct' to goproxy. (e.g. golang.conradwood.net needs to fallback to retrieve directly)")
 	maxprocs      = flag.Int("maxprocs", 4, "max processes during compile/check")
 	gocache       = flag.String("override_gocache", "", "if set use this as gocache. do not use in production")
 )
