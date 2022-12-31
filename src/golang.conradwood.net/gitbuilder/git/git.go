@@ -115,7 +115,7 @@ func (lr *LocalRepo) Printf(txt string, args ...interface{}) {
 // todo: recursive submodules?
 func (lr *LocalRepo) Clone(ctx context.Context) error {
 	l := linux.NewWithContext(ctx)
-	l.SetRuntime(300)
+	l.SetMaxRuntime(time.Duration(300) * time.Second)
 
 	dir := lr.workdir
 	os.MkdirAll(dir, 0777)
@@ -137,7 +137,7 @@ func (lr *LocalRepo) Clone(ctx context.Context) error {
 
 func (lr *LocalRepo) Checkout(ctx context.Context, commitid string) error {
 	l := linux.NewWithContext(ctx)
-	l.SetRuntime(300)
+	l.SetMaxRuntime(time.Duration(300) * time.Second)
 
 	lr.Printf("Checking out commit %s\n", commitid)
 	dir := lr.GitRepoPath()
@@ -158,7 +158,7 @@ func (lr *LocalRepo) GitRepoPath() string {
 // gets the logmessage of the currently checked out commit
 func (lr *LocalRepo) GetLogMessage(ctx context.Context) (string, error) {
 	l := linux.NewWithContext(ctx)
-	l.SetRuntime(300)
+	l.SetMaxRuntime(time.Duration(300) * time.Second)
 	gitlog, err := l.SafelyExecuteWithDir([]string{"git", "log", "-1"}, lr.GitRepoPath(), nil)
 	if err != nil {
 		fmt.Printf("Git said: %s\n", gitlog)
