@@ -6,7 +6,7 @@ require (
 	golang.conradwood.net/apis/auth v1.1.2074
 	golang.conradwood.net/apis/common v1.1.2074
 	golang.conradwood.net/apis/gitbuilder v0.0.0-00010101000000-000000000000
-	golang.conradwood.net/go-easyops v0.1.14963
+	golang.conradwood.net/go-easyops v0.1.15118
 	google.golang.org/grpc v1.51.0
 )
 
@@ -25,7 +25,7 @@ require (
 	golang.conradwood.net/apis/echoservice v1.1.2074 // indirect
 	golang.conradwood.net/apis/errorlogger v1.1.2074 // indirect
 	golang.conradwood.net/apis/framework v1.1.2074 // indirect
-	golang.conradwood.net/apis/goeasyops v1.1.2074 // indirect
+	golang.conradwood.net/apis/goeasyops v1.1.2073 // indirect
 	golang.conradwood.net/apis/objectstore v1.1.2074 // indirect
 	golang.conradwood.net/apis/registry v1.1.2074 // indirect
 	golang.conradwood.net/apis/rpcinterceptor v1.1.2074 // indirect
