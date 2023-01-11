@@ -216,7 +216,6 @@ func (b *Builder) addContextEnv(ctx context.Context, cmd *exec.Cmd) error {
 	if err != nil {
 		fmt.Printf("unable to get authentication token for external script(s): %s\n", utils.ErrorString(err))
 		fmt.Printf("Context:%#v\n", ctx)
-		panic("no auth in client")
 		return err
 	}
 	cmd.Env = append(cmd.Env, fmt.Sprintf("PROXY_USER=%s@token.yacloud.eu", u.ID))
