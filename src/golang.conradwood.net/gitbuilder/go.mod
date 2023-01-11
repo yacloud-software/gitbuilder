@@ -6,7 +6,7 @@ require (
 	golang.conradwood.net/apis/auth v1.1.2074
 	golang.conradwood.net/apis/common v1.1.2074
 	golang.conradwood.net/apis/gitbuilder v0.0.0-00010101000000-000000000000
-	golang.conradwood.net/go-easyops v0.1.15118
+	golang.conradwood.net/go-easyops v0.1.15228
 	google.golang.org/grpc v1.51.0
 )
 

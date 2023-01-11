@@ -9,6 +9,7 @@ import (
 	_ "golang.conradwood.net/gitbuilder/appinfo"
 	"golang.conradwood.net/gitbuilder/builder"
 	"golang.conradwood.net/gitbuilder/git"
+	"golang.conradwood.net/go-easyops/auth"
 	"golang.conradwood.net/go-easyops/server"
 	"golang.conradwood.net/go-easyops/utils"
 	"google.golang.org/grpc"
@@ -48,7 +49,8 @@ func (e *echoServer) GetLocalRepos(ctx context.Context, req *common.Void) (*pb.L
 	return git.GetLocalRepos(), nil
 }
 func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) error {
-	fmt.Printf("Building:\n")
+	u := auth.GetUser(srv.Context())
+	fmt.Printf("Building (as user %s):\n", auth.UserIDString(u))
 	fmt.Printf("-url=\"%s\" -commitid=\"%s\" -build=%d -repoid=%d -name=%s\n", req.GitURL, req.CommitID, req.BuildNumber, req.RepositoryID, req.RepoName)
 	fmt.Printf("  Reponame: \"%s\", Artefactname: \"%s\"\n", req.RepoName, req.ArtefactName)
 
