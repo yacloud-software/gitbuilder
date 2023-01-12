@@ -27,7 +27,7 @@ func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) er
 			continue
 		}
 		// a script is EITHER a coderunner OR a script (coderunner has precedence)
-		// coderunners are preferred, scripts will be migrated to coderunnrers once scripts work well
+		// coderunners are preferred, scripts will be migrated to coderunners once scripts work well
 		for _, scriptname := range BUILD_SCRIPTS[tagname] {
 			b.Printf("rule \"%s\" triggers script \"%s\"\n", rulename, scriptname)
 			ran, err := coderunners.Run(ctx, b, scriptname)

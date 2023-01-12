@@ -86,8 +86,12 @@ golang.conradwood.net/apis/framework v1.1.2074 h1:JmXTs37x9TMDTmxMnGiX681A1Qd/O4
 golang.conradwood.net/apis/framework v1.1.2074/go.mod h1:aakclkFxoK6Rwfb6wWbfyCPRiWsAZM94xYz69Y9fid4=
 golang.conradwood.net/apis/goeasyops v1.1.2073 h1:RVkOFaWtcSBD1fkKtyLHf0Mxi70pPL7eogYHYY3rP9I=
 golang.conradwood.net/apis/goeasyops v1.1.2073/go.mod h1:tecmKoGj8rpD4Kri6kj0WHaY+U5ici0n3tb0hR3Nnfw=
+golang.conradwood.net/apis/h2gproxy v1.1.2092 h1:Sbh+3Dofiaq8BpZVpdXUcGLWW3zrgmoWnkSuUe+tIrg=
+golang.conradwood.net/apis/h2gproxy v1.1.2092/go.mod h1:/QxwL6QrsXr3qKABVL8hUgrpcmw5IvTpEajHhm5/c0c=
 golang.conradwood.net/apis/objectstore v1.1.2074 h1:UFxt0MwOESawL2XjfGy2XqcMKMH7RIG/CQLVF+xTN0c=
 golang.conradwood.net/apis/objectstore v1.1.2074/go.mod h1:e2yf47IrPI8nSmbDODyI1zvhtP/f22VWK32GvFZgYjU=
+golang.conradwood.net/apis/protorenderer v1.1.2092 h1:3lU0L3qJBd6JPCn/SjDAO1vzlI2rDDaC3C8+4tfD0hA=
+golang.conradwood.net/apis/protorenderer v1.1.2092/go.mod h1:icBdhxNJPjHEoRw2PP5+sLoVwlnK+XyQ4JT7dlVVLuo=
 golang.conradwood.net/apis/registry v1.1.2074 h1:R7/Vr9ZUn+PWtvj+KhrS5ySocVnkB5u4nkL7Cn+eWgY=
 golang.conradwood.net/apis/registry v1.1.2074/go.mod h1:p4jF77DwFYWYQdpgzxHWvPi3Zlg1PiWqV792OOkSN+o=
 golang.conradwood.net/apis/rpcinterceptor v1.1.2074 h1:rGSA6uzJi/TTFtULxMCRVT6vvZl6sWos3aPFKs3Zi8k=

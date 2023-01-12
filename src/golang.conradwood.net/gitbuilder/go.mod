@@ -26,7 +26,9 @@ require (
 	golang.conradwood.net/apis/errorlogger v1.1.2074 // indirect
 	golang.conradwood.net/apis/framework v1.1.2074 // indirect
 	golang.conradwood.net/apis/goeasyops v1.1.2073 // indirect
+	golang.conradwood.net/apis/h2gproxy v1.1.2092 // indirect
 	golang.conradwood.net/apis/objectstore v1.1.2074 // indirect
+	golang.conradwood.net/apis/protorenderer v1.1.2092 // indirect
 	golang.conradwood.net/apis/registry v1.1.2074 // indirect
 	golang.conradwood.net/apis/rpcinterceptor v1.1.2074 // indirect
 	golang.org/x/net v0.4.0 // indirect
