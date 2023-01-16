@@ -6,7 +6,8 @@ require (
 	golang.conradwood.net/apis/auth v1.1.2074
 	golang.conradwood.net/apis/common v1.1.2074
 	golang.conradwood.net/apis/gitbuilder v0.0.0-00010101000000-000000000000
-	golang.conradwood.net/go-easyops v0.1.15228
+	golang.conradwood.net/apis/protorenderer v1.1.2092
+	golang.conradwood.net/go-easyops v0.1.15337
 	google.golang.org/grpc v1.51.0
 )
 
@@ -28,13 +29,12 @@ require (
 	golang.conradwood.net/apis/goeasyops v1.1.2073 // indirect
 	golang.conradwood.net/apis/h2gproxy v1.1.2092 // indirect
 	golang.conradwood.net/apis/objectstore v1.1.2074 // indirect
-	golang.conradwood.net/apis/protorenderer v1.1.2092 // indirect
 	golang.conradwood.net/apis/registry v1.1.2074 // indirect
 	golang.conradwood.net/apis/rpcinterceptor v1.1.2074 // indirect
 	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
-	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd // indirect
+	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 )
 
