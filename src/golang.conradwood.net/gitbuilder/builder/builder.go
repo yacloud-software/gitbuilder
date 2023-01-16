@@ -56,6 +56,11 @@ func (b *Builder) Printf(txt string, args ...interface{}) {
 	b.printer.Printf(txt, args...)
 	if b.stdout != nil {
 		b.stdout.Write([]byte(s))
+	} else {
+		if len(s) > 500 {
+			s = s[:500]
+		}
+		fmt.Print(s)
 	}
 }
 
