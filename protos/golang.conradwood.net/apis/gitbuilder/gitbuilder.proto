@@ -12,6 +12,8 @@ message BuildRequest {
   uint64 RepositoryID=5; // the build scripts might use this
   string RepoName=6; // the buildscripts might use this
   string ArtefactName=7; // the upload script uses this to upload to buildrepo
+  repeated string ExcludeBuildScripts=8; // do not run these rules, despite what is configured in the repository
+  repeated string IncludeBuildScripts=9; // do run these rules, in addition to what is configured in the repository
 }
 message BuildResponse {
   bytes Stdout=1;// the output of the build process streamed back
@@ -31,6 +33,9 @@ message LocalRepo {
 message LocalRepoList {
   repeated LocalRepo Repos=1;
 }
+message BuildScriptList {
+  repeated string Names=1;
+}
 // this is doing the actual build. It checksout a git repository, runs the build
 // and uploads the artefacts
 service GitBuilder {
@@ -38,6 +43,8 @@ service GitBuilder {
   rpc Build(BuildRequest) returns (stream BuildResponse);
   // get information about the repos on disk
   rpc GetLocalRepos(common.Void) returns (LocalRepoList);
+  // get "known" build scripts
+  rpc GetBuildScripts(common.Void) returns (BuildScriptList);
 }
 
 
