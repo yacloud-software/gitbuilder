@@ -25,6 +25,7 @@ var (
 	f_commitid    = flag.String("commitid", "", "commit id to set repository at for build")
 	f_name        = flag.String("name", "", "repo and artefact name")
 	f_repoid      = flag.Uint("repoid", 0, "repository id for scripts")
+	scripts       = flag.Bool("scripts", false, "print script names of all known scripts on builder server")
 	status        = flag.Bool("status", false, "print status of gitbuilder server")
 )
 
@@ -37,6 +38,10 @@ func main() {
 	authremote.Context()
 	ctx := authremote.ContextWithTimeout(time.Duration(5) * time.Minute)
 	ctx = addTags(ctx)
+	if *scripts {
+		printScripts(ctx)
+		os.Exit(0)
+	}
 	if *status {
 		printStatus(ctx)
 		os.Exit(0)
@@ -125,4 +130,12 @@ func printStatus(ctx context.Context) {
 		t.NewRow()
 	}
 	fmt.Println(t.ToPrettyString())
+}
+func printScripts(ctx context.Context) {
+	sn, err := echoClient.GetBuildScripts(ctx, &common.Void{})
+	utils.Bail("failed to get buildscripts", err)
+	for i, name := range sn.Names {
+		fmt.Printf("%02d. %s\n", i+1, name)
+	}
+
 }

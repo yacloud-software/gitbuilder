@@ -50,6 +50,15 @@ func NewBuilder(repopath string, stdout io.Writer, buildid uint64, bi buildinfo.
 	}
 	return b, nil
 }
+
+// get the names of all buildscripts we currently know
+func GetBuildScriptNames() []string {
+	var res []string
+	for k, _ := range BUILD_SCRIPTS {
+		res = append(res, k)
+	}
+	return res
+}
 func (b *Builder) Printf(txt string, args ...interface{}) {
 	s := fmt.Sprintf("[builder %s] ", b.buildinfo.RepositoryName())
 	s = fmt.Sprintf(s+txt, args...)

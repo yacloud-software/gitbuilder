@@ -45,6 +45,12 @@ func main() {
 /************************************
 * grpc functions
 ************************************/
+func (e *echoServer) GetBuildScripts(ctx context.Context, req *common.Void) (*pb.BuildScriptList, error) {
+	res := &pb.BuildScriptList{
+		Names: builder.GetBuildScriptNames(),
+	}
+	return res, nil
+}
 func (e *echoServer) GetLocalRepos(ctx context.Context, req *common.Void) (*pb.LocalRepoList, error) {
 	return git.GetLocalRepos(), nil
 }
