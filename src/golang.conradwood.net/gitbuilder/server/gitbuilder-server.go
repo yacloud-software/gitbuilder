@@ -57,6 +57,9 @@ func (e *echoServer) GetLocalRepos(ctx context.Context, req *common.Void) (*pb.L
 func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) error {
 	u := auth.GetUser(srv.Context())
 	fmt.Printf("Building (as user %s):\n", auth.UserIDString(u))
+	if u == nil {
+		fmt.Printf("WARNING!!! Building without user account. (from service %s)\n", auth.UserIDString(auth.GetService(srv.Context())))
+	}
 	fmt.Printf("-url=\"%s\" -commitid=\"%s\" -build=%d -repoid=%d -name=%s\n", req.GitURL, req.CommitID, req.BuildNumber, req.RepositoryID, req.RepoName)
 	fmt.Printf("  Reponame: \"%s\", Artefactname: \"%s\"\n", req.RepoName, req.ArtefactName)
 
