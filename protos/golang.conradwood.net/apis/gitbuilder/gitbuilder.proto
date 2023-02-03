@@ -14,6 +14,7 @@ message BuildRequest {
   string ArtefactName=7; // the upload script uses this to upload to buildrepo
   repeated string ExcludeBuildScripts=8; // do not run these rules, despite what is configured in the repository
   repeated string IncludeBuildScripts=9; // do run these rules, in addition to what is configured in the repository
+  bool RequiresDeepClone=10; // if true, run git clone with all commits and branches
 }
 message BuildResponse {
   bytes Stdout=1;// the output of the build process streamed back
