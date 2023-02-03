@@ -52,6 +52,7 @@ func recreate() {
 }
 
 type LocalRepo struct {
+	shallow   bool
 	url       string
 	fetchurls []string
 	inuse     bool
@@ -62,7 +63,7 @@ type LocalRepo struct {
 }
 
 // clone a repo, check it out to current head in master and fetch optional urls too
-func GetLocalRepo(ctx context.Context, url string, fetchurls []string, stdout io.Writer) (*LocalRepo, error) {
+func GetLocalRepo(ctx context.Context, url string, fetchurls []string, shallow bool, stdout io.Writer) (*LocalRepo, error) {
 	recreate()
 	lr := &LocalRepo{
 		url:       url,
@@ -70,6 +71,7 @@ func GetLocalRepo(ctx context.Context, url string, fetchurls []string, stdout io
 		inuse:     true,
 		stdout:    stdout,
 		created:   time.Now(),
+		shallow:   shallow,
 	}
 	if len(lr.fetchurls) != 0 {
 		panic("cannot do fetch yet")
@@ -122,11 +124,16 @@ func (lr *LocalRepo) Clone(ctx context.Context) error {
 	lr.Printf("Cloning git repo %s into %s...\n", lr.url, dir)
 	var err error
 	var out string
-	if *with_recursive {
-		out, err = l.SafelyExecuteWithDir([]string{"git", "clone", "--depth", "3", "--recurse-submodules", lr.url, "repo"}, dir, nil)
-	} else {
-		out, err = l.SafelyExecuteWithDir([]string{"git", "clone", "--depth", "3", lr.url, "repo"}, dir, nil)
+	com := []string{"git", "clone"}
+	if lr.shallow {
+		com = append(com, []string{"--depth", "3"}...)
 	}
+	if *with_recursive {
+		com = append(com, []string{"--recurse-submodules", lr.url, "repo"}...)
+	} else {
+		com = append(com, []string{lr.url, "repo"}...)
+	}
+	out, err = l.SafelyExecuteWithDir(com, dir, nil)
 	if err != nil {
 		lr.Printf("Error (%s). Git-clone %s said: %s\n", err, lr.url, out)
 		return err

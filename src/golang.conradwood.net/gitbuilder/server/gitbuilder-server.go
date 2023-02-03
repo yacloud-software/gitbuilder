@@ -67,7 +67,7 @@ func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) 
 
 	ctx := srv.Context()
 	sw := &serverwriter{srv: srv}
-	lr, err := git.GetLocalRepo(ctx, req.GitURL, nil, sw)
+	lr, err := git.GetLocalRepo(ctx, req.GitURL, nil, !req.RequiresDeepClone, sw)
 	if err != nil {
 		return err
 	}
