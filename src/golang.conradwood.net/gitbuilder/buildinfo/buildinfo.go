@@ -6,4 +6,5 @@ type BuildInfo interface {
 	RepositoryName() string
 	RepositoryArtefactName() string
 	BuildNumber() uint64
+	IsScriptIncluded(name string) bool
 }

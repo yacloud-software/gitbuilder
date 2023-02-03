@@ -21,6 +21,10 @@ func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) er
 
 	for _, rulename := range buildrules.Builds {
 		b.Printf("rule: \"%s\"\n", rulename)
+		if !b.BuildInfo().IsScriptIncluded(rulename) {
+			b.Printf("Rule skipped (it is explicitly excluded in buildrequest)\n")
+			continue
+		}
 		tagname := buildrules.CheckBuildType(rulename)
 		if tagname == "" {
 			b.Printf("rule \"%s\" is not valid\n", rulename)

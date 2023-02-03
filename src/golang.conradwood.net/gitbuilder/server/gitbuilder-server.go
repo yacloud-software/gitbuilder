@@ -82,11 +82,14 @@ func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) 
 	}
 
 	bd, err := builder.NewBuilder(lr.GitRepoPath(), sw, req.BuildNumber, &builder.StandardBuildInfo{
-		Commit:       req.CommitID,
-		RepoID:       req.RepositoryID,
-		RepoName:     req.RepoName,
-		ArtefactName: req.ArtefactName,
-		Build:        req.BuildNumber,
+		Req: req,
+		/*
+			Commit:       req.CommitID,
+			RepoID:       req.RepositoryID,
+			RepoName:     req.RepoName,
+			ArtefactName: req.ArtefactName,
+			Build:        req.BuildNumber,
+		*/
 	})
 	if err != nil {
 		return err
