@@ -49,11 +49,13 @@ func main() {
 	if *f_dir != "" {
 		b, err := builder.NewBuilder(*f_dir, nil, uint64(*f_buildnumber),
 			&builder.StandardBuildInfo{
-				Commit:       *f_commitid,
-				RepoID:       1,
-				RepoName:     "test_reponame",
-				ArtefactName: "test_artefact",
-				Build:        uint64(*f_buildnumber),
+				Req: &pb.BuildRequest{
+					CommitID:     *f_commitid,
+					RepositoryID: 1,
+					RepoName:     "test_reponame",
+					ArtefactName: "test_artefact",
+					BuildNumber:  uint64(*f_buildnumber),
+				},
 			},
 		)
 		br := &builder.BuildRules{
