@@ -10,6 +10,7 @@ import (
 	"golang.conradwood.net/gitbuilder/builder"
 	"golang.conradwood.net/gitbuilder/git"
 	"golang.conradwood.net/go-easyops/auth"
+	"golang.conradwood.net/go-easyops/errors"
 	"golang.conradwood.net/go-easyops/server"
 	"golang.conradwood.net/go-easyops/utils"
 	"google.golang.org/grpc"
@@ -59,6 +60,7 @@ func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) 
 	fmt.Printf("Building (as user %s):\n", auth.UserIDString(u))
 	if u == nil {
 		fmt.Printf("WARNING!!! Building without user account. (from service %s)\n", auth.UserIDString(auth.GetService(srv.Context())))
+		return errors.Unauthenticated(srv.Context(), "User account required to build")
 	}
 	fmt.Printf("-url=\"%s\" -commitid=\"%s\" -build=%d -repoid=%d -name=%s\n", req.GitURL, req.CommitID, req.BuildNumber, req.RepositoryID, req.RepoName)
 	fmt.Printf("  Reponame: \"%s\", Artefactname: \"%s\"\n", req.RepoName, req.ArtefactName)
