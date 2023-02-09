@@ -7,7 +7,7 @@ require (
 	golang.conradwood.net/apis/common v1.1.2142
 	golang.conradwood.net/apis/gitbuilder v0.0.0-00010101000000-000000000000
 	golang.conradwood.net/apis/protorenderer v1.1.2142
-	golang.conradwood.net/go-easyops v0.1.16013
+	golang.conradwood.net/go-easyops v0.1.16035
 	google.golang.org/grpc v1.52.0
 )
 
