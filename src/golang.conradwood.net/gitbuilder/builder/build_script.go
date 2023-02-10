@@ -21,7 +21,24 @@ var (
 	goproxydirect = flag.Bool("goproxy_direct", false, "if true, add ',direct' to goproxy. (e.g. golang.conradwood.net needs to fallback to retrieve directly)")
 	maxprocs      = flag.Int("maxprocs", 4, "max processes during compile/check")
 	gocache       = flag.String("override_gocache", "", "if set use this as gocache. do not use in production")
+	locpath       string
+	binpath       string // path of extra binaries
+
+	PATH = []string{"/opt/yacloud/ctools/dev/bin", "/opt/yacloud/ctools/dev/go/current/go/bin/", "/etc/java-home/bin", "/srv/singingcat/binutils/bin/", "~/bin", "/sbin", "/usr/sbin", "/usr/local/bin", "/usr/bin", "/bin", "/srv/java/ant/current/bin", "/srv/singingcat/esp8266/sdk/xtensa-lx106-elf/bin/", "/srv/java/ant/bin", "/srv/java/gradle/latest/bin"}
 )
+
+func init() {
+	l, err := os.Getwd()
+	if err != nil {
+		panic(fmt.Sprintf("os.Getwd: %s", err))
+	}
+	locpath = l
+	bin_name, err := utils.FindFile("extra/gitcredentials-client")
+	utils.Bail("failed to find required file", err)
+	bin_name, err = filepath.Abs(bin_name)
+	utils.Bail("unable to make path absolute", err)
+	binpath = filepath.Dir(bin_name)
+}
 
 // given a scriptname, e.g. "autobuild.sh" or "go-build.sh" tries to find the script.
 // autobuild.sh is the only which will be searched for in the working directory (legacy requirement)
@@ -122,7 +139,6 @@ GRADLE_HOME=/srv/java/gradle/latest
 TERM=xterm
 SHELL=/bin/bash
 ANT_HOME=/srv/java/ant/current/
-PATH=/opt/yacloud/ctools/dev/bin:/opt/yacloud/ctools/dev/go/current/go/bin/:/etc/java-home/bin:/srv/singingcat/binutils/bin/:~/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/bin:/bin:/srv/java/ant/current/bin:/srv/singingcat/esp8266/sdk/xtensa-lx106-elf/bin/:/srv/java/ant/bin:/srv/java/gradle/latest/bin
 PWD=/tmp
 GOROOT=/opt/yacloud/ctools/dev/go/current/go
 LANG=en_GB.UTF-8
@@ -145,8 +161,12 @@ LC_CTYPE=en_GB.UTF-8
 	}
 	absdir := b.GetRepoPath()
 
+	p := append([]string{binpath}, PATH...)
+	sp := strings.Join(p, ":")
+
 	fmt.Printf("Bindir: \"%s\"\n", bindir)
 	os.MkdirAll(bindir+"/gobin", 0777)
+	res = append(res, fmt.Sprintf("PATH=%s", sp))
 	res = append(res, fmt.Sprintf("BUILD_NUMBER=%d", b.buildid))
 	res = append(res, fmt.Sprintf("GOPATH=%s", absdir))
 	res = append(res, fmt.Sprintf("HOME=%s", absdir))

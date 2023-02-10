@@ -118,6 +118,7 @@ func (lr *LocalRepo) Printf(txt string, args ...interface{}) {
 func (lr *LocalRepo) Clone(ctx context.Context) error {
 	l := linux.NewWithContext(ctx)
 	l.SetMaxRuntime(time.Duration(300) * time.Second)
+	l.SetEnvironment(getGitEnv())
 
 	dir := lr.workdir
 	os.MkdirAll(dir, 0777)
@@ -145,6 +146,7 @@ func (lr *LocalRepo) Clone(ctx context.Context) error {
 func (lr *LocalRepo) Checkout(ctx context.Context, commitid string) error {
 	l := linux.NewWithContext(ctx)
 	l.SetMaxRuntime(time.Duration(300) * time.Second)
+	l.SetEnvironment(getGitEnv())
 
 	lr.Printf("Checking out commit %s\n", commitid)
 	dir := lr.GitRepoPath()
@@ -166,6 +168,8 @@ func (lr *LocalRepo) GitRepoPath() string {
 func (lr *LocalRepo) GetLogMessage(ctx context.Context) (string, error) {
 	l := linux.NewWithContext(ctx)
 	l.SetMaxRuntime(time.Duration(300) * time.Second)
+	l.SetEnvironment(getGitEnv())
+
 	gitlog, err := l.SafelyExecuteWithDir([]string{"git", "log", "-1"}, lr.GitRepoPath(), nil)
 	if err != nil {
 		fmt.Printf("Git said: %s\n", gitlog)
