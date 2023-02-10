@@ -23,7 +23,7 @@ const (
 
 var (
 	locpath         string
-	local_gitconfig = flag.Bool("use_local_gitconfig", false, "if true use a local gitconfig, contained within gitbuilder")
+	local_gitconfig = flag.Bool("use_local_gitconfig", true, "if true use a local gitconfig, contained within gitbuilder")
 )
 
 func init() {
