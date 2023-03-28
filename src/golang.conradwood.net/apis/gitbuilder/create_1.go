@@ -1,8 +1,15 @@
 // client create: GitBuilderClient
+/*
+  Created by /home/cnw/devel/go/go-tools/src/golang.conradwood.net/gotools/protoc-gen-cnw/protoc-gen-cnw.go
+*/
+
 /* geninfo:
    filename  : protos/golang.conradwood.net/apis/gitbuilder/gitbuilder.proto
    gopackage : golang.conradwood.net/apis/gitbuilder
    importname: ai_0
+   clientfunc: GetGitBuilder
+   serverfunc: NewGitBuilder
+   lookupfunc: GitBuilderLookupID
    varname   : client_GitBuilderClient_0
    clientname: GitBuilderClient
    servername: GitBuilderServer
@@ -33,8 +40,9 @@ func GetGitBuilderClient() GitBuilderClient {
        return client_GitBuilderClient_0
     }
 
-    client_GitBuilderClient_0 = NewGitBuilderClient(client.Connect("gitbuilder.GitBuilder"))
+    client_GitBuilderClient_0 = NewGitBuilderClient(client.Connect(GitBuilderLookupID()))
     lock_GitBuilderClient_0.Unlock()
     return client_GitBuilderClient_0
 }
 
+func GitBuilderLookupID() string { return "gitbuilder.GitBuilder" } // returns the ID suitable for lookup in the registry. treat as opaque, subject to change.
