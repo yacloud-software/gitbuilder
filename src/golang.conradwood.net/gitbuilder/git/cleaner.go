@@ -2,6 +2,7 @@ package git
 
 import (
 	"fmt"
+	"golang.conradwood.net/go-easyops/utils"
 	"os"
 	"time"
 )
@@ -27,6 +28,8 @@ func clean() {
 		}
 		err := os.RemoveAll(r.workdir)
 		if err != nil {
+			// try a chown
+			utils.DirWalk(r.workdir, do_chmod)
 			fmt.Printf("failed to delete: %s\n", err)
 			nr = append(nr, r)
 			continue
@@ -34,4 +37,12 @@ func clean() {
 		fmt.Printf("Deleted \"%s\"\n", r.workdir)
 	}
 	repos = nr
+}
+func do_chmod(root string, fname string) error {
+	ffname := root + "/" + fname
+	err := os.Chmod(ffname, 0777)
+	if err != nil {
+		fmt.Printf("failed to chmod %s: %s\n", ffname, err)
+	}
+	return nil
 }

@@ -17,8 +17,6 @@ import (
 )
 
 var (
-	inc_scripts   = flag.String("inc_scripts", "", "comma delimited list of scripts to include in run")
-	ex_scripts    = flag.String("exc_scripts", "", "comma delimited list of scripts to exclude from run")
 	tags          = flag.String("tags", "", "routing tags to choose")
 	echoClient    pb.GitBuilderClient
 	f_url         = flag.String("url", "", "git url to build")
@@ -70,14 +68,12 @@ func main() {
 		os.Exit(0)
 	}
 	empty := &pb.BuildRequest{
-		RepoName:            *f_name,
-		ArtefactName:        *f_name,
-		GitURL:              *f_url,
-		CommitID:            *f_commitid,
-		BuildNumber:         uint64(*f_buildnumber),
-		RepositoryID:        uint64(*f_repoid),
-		IncludeBuildScripts: include_build_scripts(),
-		ExcludeBuildScripts: exclude_build_scripts(),
+		RepoName:     *f_name,
+		ArtefactName: *f_name,
+		GitURL:       *f_url,
+		CommitID:     *f_commitid,
+		BuildNumber:  uint64(*f_buildnumber),
+		RepositoryID: uint64(*f_repoid),
 	}
 	stream, err := echoClient.Build(ctx, empty)
 	utils.Bail("Failed to ping server", err)
@@ -144,22 +140,4 @@ func printScripts(ctx context.Context) {
 		fmt.Printf("%02d. %s\n", i+1, name)
 	}
 
-}
-
-func exclude_build_scripts() []string {
-	return cdl(*ex_scripts)
-}
-func include_build_scripts() []string {
-	return cdl(*inc_scripts)
-}
-
-func cdl(cdl string) []string {
-	var res []string
-	if cdl == "" {
-		return res
-	}
-	for _, s := range strings.Split(cdl, ",") {
-		res = append(res, strings.Trim(s, " "))
-	}
-	return res
 }
