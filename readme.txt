@@ -29,7 +29,7 @@ apt-get install cmake
 
 
 
-
+a new feature (true by default) ships with a gitconfig, so that the above is no longer required for gitbuilder.
 
 
 
