@@ -23,6 +23,7 @@ const (
 
 var (
 	locpath         string
+	git_debug       = flag.Bool("debug_git", false, "if true make git print debug messages")
 	local_gitconfig = flag.Bool("use_local_gitconfig", true, "if true use a local gitconfig, contained within gitbuilder")
 )
 
@@ -47,5 +48,18 @@ func getGitEnv() []string {
 	fname := locpath + "/git.config"
 	err = utils.WriteFile(fname, []byte(gitconf))
 	utils.Bail("failed to write gitconf", err)
-	return []string{"GIT_CONFIG=" + fname}
+	res := []string{
+		"GIT_CONFIG=" + fname,
+		"GIT_TERMINAL_PROMPT=false",
+		"GIT_CONFIG_SYSTEM=" + fname,
+		"GIT_CONFIG_GLOBAL=" + fname,
+	}
+	if *git_debug {
+		debug_res := []string{
+			"GIT_TRACE2=1",
+			"GIT_TRACE=1",
+		}
+		res = append(res, debug_res...)
+	}
+	return res
 }
