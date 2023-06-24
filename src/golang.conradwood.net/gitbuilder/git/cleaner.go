@@ -30,9 +30,12 @@ func clean() {
 		if err != nil {
 			// try a chown
 			utils.DirWalk(r.workdir, do_chmod)
-			fmt.Printf("failed to delete: %s\n", err)
-			nr = append(nr, r)
-			continue
+			err := os.RemoveAll(r.workdir)
+			if err != nil {
+				fmt.Printf("failed to delete: %s\n", err)
+				nr = append(nr, r)
+				continue
+			}
 		}
 		fmt.Printf("Deleted \"%s\"\n", r.workdir)
 	}
