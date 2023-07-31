@@ -25,6 +25,16 @@ func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) er
 			b.Printf("Rule skipped (it is explicitly excluded in buildrequest)\n")
 			continue
 		}
+
+		ran, err := coderunners.Run(ctx, b, rulename)
+		if err != nil {
+			b.Printf("Coderunner %s failed: %s\n", rulename, utils.ErrorString(err))
+			return err
+		}
+		if ran {
+			continue
+		}
+
 		tagname := buildrules.CheckBuildType(rulename)
 		if tagname == "" {
 			b.Printf("rule \"%s\" is not valid\n", rulename)
@@ -33,15 +43,6 @@ func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) er
 		// a script is EITHER a coderunner OR a script (coderunner has precedence)
 		// coderunners are preferred, scripts will be migrated to coderunners once scripts work well
 		for _, scriptname := range BUILD_SCRIPTS[tagname] {
-			ran, err := coderunners.Run(ctx, b, tagname)
-			if err != nil {
-				b.Printf("Coderunner failed: %s\n", utils.ErrorString(err))
-				return err
-			}
-			if ran {
-				continue
-			}
-
 			b.Printf("rule \"%s\" triggers script \"%s\"\n", rulename, scriptname)
 			ran, err = coderunners.Run(ctx, b, scriptname)
 			if err != nil {
