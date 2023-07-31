@@ -12,7 +12,7 @@ type cbuilder struct{}
 
 func (c *cbuilder) Run(ctx context.Context, builder brunner) error {
 	srcdir := builder.GetRepoPath() + "/c"
-	distdir := builder.GetRepoPath() + "/dist"
+	distdir := builder.GetRepoPath() + "/dist/"
 	if !utils.FileExists(srcdir) {
 		builder.Printf("WARNING - cbuilder invoked, but directory %s does not exist", srcdir)
 		return nil
