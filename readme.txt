@@ -34,3 +34,11 @@ a new feature (true by default) ships with a gitconfig, so that the above is no 
 
 
 
+========== rules ======
+STANDARD_C
+  expects a subdirectory 'c' and underneath subdirectories with a Makefile each.
+  for example:
+      c/src1/Makefile
+      c/src2/Makefile
+   the Makefile will be passed DIST=[distdir].
+   all binaries must be compiled into ${DIST}/something
