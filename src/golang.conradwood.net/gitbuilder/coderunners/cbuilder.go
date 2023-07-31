@@ -6,6 +6,7 @@ import (
 	"golang.conradwood.net/go-easyops/utils"
 	"io/fs"
 	"io/ioutil"
+	"time"
 )
 
 type cbuilder struct{}
@@ -39,6 +40,7 @@ func (c *cbuilder) Run(ctx context.Context, builder brunner) error {
 	for _, c := range subdirs {
 		ffname := srcdir + "/" + c.Name()
 		l := linux.New()
+		l.SetMaxRuntime(time.Duration(5) * time.Minute)
 		com := []string{
 			"make",
 			"all",
