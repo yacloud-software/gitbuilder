@@ -44,6 +44,7 @@ func (c *cbuilder) Run(ctx context.Context, builder brunner) error {
 			"DIST=" + distdir,
 		}
 		relname := "c/" + c.Name()
+		builder.Printf("Compiling %s...\n", relname)
 		b, err := l.SafelyExecuteWithDir(com, ffname, nil)
 		if err != nil {
 			builder.Printf("Compile %s failed:%s\n", relname, b)
