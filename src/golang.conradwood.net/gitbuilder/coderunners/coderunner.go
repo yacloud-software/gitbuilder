@@ -21,6 +21,7 @@ type runner interface {
 }
 
 // returns true if it is a coderunner, false if it is not a coderunner
+// this can either be a "tagname" (as set in BUILD_RULES) or a "scriptname" (as translated by the builder)
 func Run(ctx context.Context, builder brunner, name string) (bool, error) {
 	fmt.Printf("[coderunner ] %s\n", name)
 	var g runner
@@ -30,7 +31,7 @@ func Run(ctx context.Context, builder brunner, name string) (bool, error) {
 		g = goversion{}
 	} else if name == "protos-build.sh" && *use_internal_proto_builder {
 		g = protobuilder{}
-	} else if name == "c-build.sh" {
+	} else if name == "STANDARD_C" {
 		g = &cbuilder{}
 	}
 	if g == nil {

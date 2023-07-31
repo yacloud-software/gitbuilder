@@ -33,8 +33,17 @@ func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) er
 		// a script is EITHER a coderunner OR a script (coderunner has precedence)
 		// coderunners are preferred, scripts will be migrated to coderunners once scripts work well
 		for _, scriptname := range BUILD_SCRIPTS[tagname] {
+			ran, err := coderunners.Run(ctx, b, tagname)
+			if err != nil {
+				b.Printf("Coderunner failed: %s\n", utils.ErrorString(err))
+				return err
+			}
+			if ran {
+				continue
+			}
+
 			b.Printf("rule \"%s\" triggers script \"%s\"\n", rulename, scriptname)
-			ran, err := coderunners.Run(ctx, b, scriptname)
+			ran, err = coderunners.Run(ctx, b, scriptname)
 			if err != nil {
 				b.Printf("Coderunner failed: %s\n", utils.ErrorString(err))
 				return err
