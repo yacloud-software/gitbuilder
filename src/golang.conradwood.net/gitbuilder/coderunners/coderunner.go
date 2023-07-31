@@ -25,11 +25,13 @@ func Run(ctx context.Context, builder brunner, name string) (bool, error) {
 	fmt.Printf("[coderunner ] %s\n", name)
 	var g runner
 	if name == "coderunner-gomodule" {
-		g = gomodule{}
+		g = &gomodule{}
 	} else if name == "coderunner-go-version" {
 		g = goversion{}
 	} else if name == "protos-build.sh" && *use_internal_proto_builder {
 		g = protobuilder{}
+	} else if name == "c-build.sh" {
+		g = &cbuilder{}
 	}
 	if g == nil {
 		return false, nil

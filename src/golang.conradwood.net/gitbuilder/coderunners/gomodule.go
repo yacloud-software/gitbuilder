@@ -16,7 +16,7 @@ type gomodule struct {
 }
 
 // find go.mod files, zip it and stuff it into "dist"
-func (g gomodule) Run(ctx context.Context, b brunner) error {
+func (g *gomodule) Run(ctx context.Context, b brunner) error {
 	version := fmt.Sprintf("v0.1.%d", b.BuildInfo().BuildNumber())
 
 	// find go.mod files:
