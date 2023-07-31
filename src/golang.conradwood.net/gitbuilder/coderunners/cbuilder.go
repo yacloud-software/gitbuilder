@@ -35,6 +35,7 @@ func (c *cbuilder) Run(ctx context.Context, builder brunner) error {
 		return nil
 	}
 
+	builder.Printf("C-Builder dist: \"%s\"\n", distdir)
 	for _, c := range subdirs {
 		ffname := srcdir + "/" + c.Name()
 		l := linux.New()
