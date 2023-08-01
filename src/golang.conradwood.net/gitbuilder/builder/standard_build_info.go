@@ -15,6 +15,9 @@ type StandardBuildInfo struct {
 	*/
 }
 
+func (s *StandardBuildInfo) GetGitURL() string {
+	return s.Req.GitURL
+}
 func (s *StandardBuildInfo) BuildNumber() uint64 {
 	return s.Req.BuildNumber
 }

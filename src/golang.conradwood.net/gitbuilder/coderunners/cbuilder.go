@@ -50,6 +50,7 @@ func (c *cbuilder) Run(ctx context.Context, builder brunner) error {
 			fmt.Sprintf("BUILD_ID=%d", bi.BuildNumber()),
 			fmt.Sprintf("REPOSITORY_ID=%d", bi.RepositoryID()),
 			fmt.Sprintf("ARTEFACT_NAME=%s", bi.RepositoryArtefactName()),
+			fmt.Sprintf("GIT_URL=%s", bi.GetGitURL()),
 		}
 		relname := "c/" + c.Name()
 		builder.Printf("Compiling \"%s\"...\n", relname)

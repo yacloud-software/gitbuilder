@@ -167,6 +167,7 @@ LC_CTYPE=en_GB.UTF-8
 	fmt.Printf("Bindir: \"%s\"\n", bindir)
 	os.MkdirAll(bindir+"/gobin", 0777)
 	res = append(res, fmt.Sprintf("PATH=%s", sp))
+	res = append(res, fmt.Sprintf("GIT_URL=%s", b.buildinfo.GetGitURL()))
 	res = append(res, fmt.Sprintf("BUILD_NUMBER=%d", b.buildid))
 	res = append(res, fmt.Sprintf("GOPATH=%s", absdir))
 	res = append(res, fmt.Sprintf("HOME=%s", absdir))
