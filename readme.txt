@@ -42,3 +42,9 @@ STANDARD_C
       c/src2/Makefile
    the Makefile will be passed DIST=[distdir].
    all binaries must be compiled into ${DIST}/something
+
+make will be invoked with the following variables:
+ BUILD_NUMBER=123
+ REPOSITORY_ID=123
+ ARTEFACT_NAME=fooar
+ 
