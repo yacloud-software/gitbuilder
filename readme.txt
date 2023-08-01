@@ -47,4 +47,7 @@ make will be invoked with the following variables:
  BUILD_NUMBER=123
  REPOSITORY_ID=123
  ARTEFACT_NAME=fooar
- 
+ GIT_URL=https://foo/bar
+
+the above are also set as BUILDVARS:
+BUILDVARS="-DBUILD_NUMBER=123 -DREPOSITORY_ID=123 -DGIT_URL='https://foo/bar' -DARTEFACT_NAME"
