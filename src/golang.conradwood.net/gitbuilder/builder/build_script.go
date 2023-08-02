@@ -167,7 +167,7 @@ LC_CTYPE=en_GB.UTF-8
 	fmt.Printf("Bindir: \"%s\"\n", bindir)
 	os.MkdirAll(bindir+"/gobin", 0777)
 	res = append(res, fmt.Sprintf("PATH=%s", sp))
-	res = append(res, fmt.Sprintf("GIT_URL=%s", b.buildinfo.GetGitURL()))
+	res = append(res, fmt.Sprintf("GIT_URL=%s", b.buildinfo.GitURL()))
 	res = append(res, fmt.Sprintf("BUILD_NUMBER=%d", b.buildid))
 	res = append(res, fmt.Sprintf("GOPATH=%s", absdir))
 	res = append(res, fmt.Sprintf("HOME=%s", absdir))
@@ -204,8 +204,8 @@ LC_CTYPE=en_GB.UTF-8
 
 	// make LDFLAGS="-ldflags '-X golang.conradwood.net/go-easyops/appinfo.LD_Number=56'"
 	// make LDFLAGS="-ldflags '-X golang.conradwood.net/go-easyops/appinfo.LD_Number=56 -X golang.conradwood.net/go-easyops/appinfo.LD_Timestamp=89'"
-	ldflags := `-ldflags '-X golang.conradwood.net/go-easyops/appinfo.LD_Number=%d -X golang.conradwood.net/go-easyops/appinfo.LD_Description=%s -X golang.conradwood.net/go-easyops/appinfo.LD_Timestamp=%d -X golang.conradwood.net/go-easyops/appinfo.LD_RepositoryID=%d -X golang.conradwood.net/go-easyops/appinfo.LD_RepositoryName=%s -X golang.conradwood.net/go-easyops/appinfo.LD_CommitID=%s' `
-	ldflags = fmt.Sprintf(ldflags, b.buildid, "gitbuilder", b.timestamp.Unix(), b.buildinfo.RepositoryID(), b.buildinfo.RepositoryName(), b.buildinfo.CommitID())
+	ldflags := `-ldflags '-X golang.conradwood.net/go-easyops/appinfo.LD_Number=%d -X golang.conradwood.net/go-easyops/appinfo.LD_Description=%s -X golang.conradwood.net/go-easyops/appinfo.LD_Timestamp=%d -X golang.conradwood.net/go-easyops/appinfo.LD_RepositoryID=%d -X golang.conradwood.net/go-easyops/appinfo.LD_RepositoryName=%s -X golang.conradwood.net/go-easyops/appinfo.LD_CommitID=%s -X golang.conradwood.net/go-easyops/appinfo.LD_GitURL=%s' `
+	ldflags = fmt.Sprintf(ldflags, b.buildid, "gitbuilder", b.timestamp.Unix(), b.buildinfo.RepositoryID(), b.buildinfo.RepositoryName(), b.buildinfo.CommitID(), b.buildinfo.GitURL())
 	res = append(res, fmt.Sprintf("GO_LDFLAGS=%s", ldflags))
 	return res
 }

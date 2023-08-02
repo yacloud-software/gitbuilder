@@ -7,5 +7,5 @@ type BuildInfo interface {
 	RepositoryArtefactName() string
 	BuildNumber() uint64
 	IsScriptIncluded(name string) bool
-	GetGitURL() string
+	GitURL() string
 }
