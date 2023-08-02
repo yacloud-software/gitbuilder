@@ -51,3 +51,19 @@ make will be invoked with the following variables:
 
 the above are also set as BUILDVARS:
 BUILDVARS="-DBUILD_NUMBER=123 -DREPOSITORY_ID=123 -DGIT_URL='https://foo/bar' -DARTEFACT_NAME"
+
+a typical Makefile is something like this:
+BUILDVARS='-DBUILD_ID=1 -DREPOSITORY_ID=1 -DGIT_URL="notset" -DARTEFACT_NAME="none"'
+build:
+	gcc foo.c ${BUILDVARS}
+
+and in foo.c:
+
+
+#define STRINGIZE(x) #x
+#define STRINGIZE_VALUE_OF(x) STRINGIZE(x)
+
+
+int main(int argc,char **argv) {
+    printf("Buildnumber: %s, RepositoryID: %s, Artefact: %s, Git: %s\n",STRINGIZE_VALUE_OF(BUILD_ID),STRINGIZE_VALUE_OF(REPOSIITORY_ID),STRINGIZE_VALUE_OF(ARTEFACT_NAME),STRINGIZE_VALUE_OF(GIT_URL));
+    }
