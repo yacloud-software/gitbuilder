@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package gitbuilder;
+option go_package = "golang.conradwood.net/apis/gitbuilder";
 option java_package = "net.conradwood.apis.gitbuilder";
 import "golang.conradwood.net/apis/common/common.proto";
 
@@ -47,5 +48,3 @@ service GitBuilder {
   // get "known" build scripts
   rpc GetBuildScripts(common.Void) returns (BuildScriptList);
 }
-
-
