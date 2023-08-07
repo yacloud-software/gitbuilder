@@ -67,3 +67,4 @@ and in foo.c:
 int main(int argc,char **argv) {
     printf("Buildnumber: %s, RepositoryID: %s, Artefact: %s, Git: %s\n",STRINGIZE_VALUE_OF(BUILD_ID),STRINGIZE_VALUE_OF(REPOSIITORY_ID),STRINGIZE_VALUE_OF(ARTEFACT_NAME),STRINGIZE_VALUE_OF(GIT_URL));
     }
+
