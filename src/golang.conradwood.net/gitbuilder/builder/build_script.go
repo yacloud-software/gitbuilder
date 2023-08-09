@@ -24,7 +24,10 @@ var (
 	locpath       string
 	binpath       string // path of extra binaries
 
-	PATH = []string{"/opt/yacloud/ctools/dev/bin", "/opt/yacloud/ctools/dev/go/current/go/bin/", "/etc/java-home/bin", "/srv/singingcat/binutils/bin/", "~/bin", "/sbin", "/usr/sbin", "/usr/local/bin", "/usr/bin", "/bin", "/srv/java/ant/current/bin", "/srv/singingcat/esp8266/sdk/xtensa-lx106-elf/bin/", "/srv/java/ant/bin", "/srv/java/gradle/latest/bin"}
+	PATH = []string{
+		"/opt/yacloud/current/ctools/dev/bin", "/opt/yacloud/current/ctools/dev/go/current/go/bin/",
+		"/opt/yacloud/ctools/dev/bin", "/opt/yacloud/ctools/dev/go/current/go/bin/",
+		"/etc/java-home/bin", "/srv/singingcat/binutils/bin/", "~/bin", "/sbin", "/usr/sbin", "/usr/local/bin", "/usr/bin", "/bin", "/srv/java/ant/current/bin", "/srv/singingcat/esp8266/sdk/xtensa-lx106-elf/bin/", "/srv/java/ant/bin", "/srv/java/gradle/latest/bin"}
 )
 
 func init() {
@@ -140,7 +143,7 @@ TERM=xterm
 SHELL=/bin/bash
 ANT_HOME=/srv/java/ant/current/
 PWD=/tmp
-GOROOT=/opt/yacloud/ctools/dev/go/current/go
+GOROOT=/opt/yacloud/current/ctools/dev/go/current/go
 LANG=en_GB.UTF-8
 LANGUAGE=en_GB:en
 LC_CTYPE=en_GB.UTF-8
