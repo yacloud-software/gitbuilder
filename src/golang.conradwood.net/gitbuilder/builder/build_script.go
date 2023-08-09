@@ -143,11 +143,17 @@ TERM=xterm
 SHELL=/bin/bash
 ANT_HOME=/srv/java/ant/current/
 PWD=/tmp
-GOROOT=/opt/yacloud/current/ctools/dev/go/current/go
+GOROOT=%s
 LANG=en_GB.UTF-8
 LANGUAGE=en_GB:en
 LC_CTYPE=en_GB.UTF-8
 `
+	x := "/opt/yacloud/ctools/dev/go/current/go"
+	if utils.FileExists("/opt/yacloud/current/ctools/dev/go/current/go") {
+		x = "/opt/yacloud/current/ctools/dev/go/current/go"
+	}
+	std = fmt.Sprintf(std, x)
+
 	var res []string
 	for _, s := range strings.Split(std, "\n") {
 		if len(s) < 2 {
