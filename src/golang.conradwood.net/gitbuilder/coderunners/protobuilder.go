@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"golang.conradwood.net/apis/protorenderer"
 	"golang.conradwood.net/go-easyops/utils"
+	"strings"
 )
 
 type protobuilder struct {
@@ -26,6 +27,12 @@ func (g protobuilder) Run(ctx context.Context, b brunner) error {
 	return nil
 }
 func (g protobuilder) submitFile(root, rel_file string) error {
+	if strings.HasPrefix(rel_file, "#") {
+		return nil
+	}
+	if !strings.HasSuffix(rel_file, ".proto") {
+		return nil
+	}
 	abs := root + "/" + rel_file
 	pfilename := "protos/" + rel_file
 	content, err := utils.ReadFile(abs)
