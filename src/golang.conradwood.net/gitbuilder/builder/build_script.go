@@ -208,8 +208,8 @@ LC_CTYPE=en_GB.UTF-8
 
 	// make LDFLAGS="-ldflags '-X golang.conradwood.net/go-easyops/appinfo.LD_Number=56'"
 	// make LDFLAGS="-ldflags '-X golang.conradwood.net/go-easyops/appinfo.LD_Number=56 -X golang.conradwood.net/go-easyops/appinfo.LD_Timestamp=89'"
-	ldflags := `-ldflags '-X golang.conradwood.net/go-easyops/appinfo.LD_Number=%d -X golang.conradwood.net/go-easyops/appinfo.LD_Description=%s -X golang.conradwood.net/go-easyops/appinfo.LD_Timestamp=%d -X golang.conradwood.net/go-easyops/appinfo.LD_RepositoryID=%d -X golang.conradwood.net/go-easyops/appinfo.LD_RepositoryName=%s -X golang.conradwood.net/go-easyops/appinfo.LD_CommitID=%s -X golang.conradwood.net/go-easyops/appinfo.LD_GitURL=%s' `
-	ldflags = fmt.Sprintf(ldflags, b.buildid, "gitbuilder", b.timestamp.Unix(), b.buildinfo.RepositoryID(), b.buildinfo.RepositoryName(), b.buildinfo.CommitID(), b.buildinfo.GitURL())
+	ldflags := `-ldflags '-X golang.conradwood.net/go-easyops/appinfo.LD_Number=%d -X golang.conradwood.net/go-easyops/appinfo.LD_Description=%s -X golang.conradwood.net/go-easyops/appinfo.LD_Timestamp=%d -X golang.conradwood.net/go-easyops/appinfo.LD_ArtefactID=%d -X golang.conradwood.net/go-easyops/appinfo.LD_RepositoryID=%d -X golang.conradwood.net/go-easyops/appinfo.LD_RepositoryName=%s -X golang.conradwood.net/go-easyops/appinfo.LD_CommitID=%s -X golang.conradwood.net/go-easyops/appinfo.LD_GitURL=%s' `
+	ldflags = fmt.Sprintf(ldflags, b.buildid, "gitbuilder", b.timestamp.Unix(), b.buildinfo.ArtefactID(), b.buildinfo.RepositoryID(), b.buildinfo.RepositoryName(), b.buildinfo.CommitID(), b.buildinfo.GitURL())
 	res = append(res, fmt.Sprintf("GO_LDFLAGS=%s", ldflags))
 	return res
 }
