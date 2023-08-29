@@ -180,6 +180,7 @@ LC_CTYPE=en_GB.UTF-8
 	res = append(res, fmt.Sprintf("PROJECT_NAME=%s", b.buildinfo.RepositoryName()))
 	res = append(res, fmt.Sprintf("BUILD_REPOSITORY=%s", b.buildinfo.RepositoryName()))
 	res = append(res, fmt.Sprintf("BUILD_ARTEFACT=%s", b.buildinfo.RepositoryArtefactName()))
+	res = append(res, fmt.Sprintf("BUILD_ARTEFACTID=%d", b.buildinfo.ArtefactID()))
 	res = append(res, fmt.Sprintf("BUILD_TIMESTAMP=%d", b.timestamp.Unix()))
 	res = append(res, fmt.Sprintf("GIT_BRANCH=%s", "master"))
 	res = append(res, fmt.Sprintf("GOBIN=%s/gobin", bindir))

@@ -6,13 +6,6 @@ import (
 
 type StandardBuildInfo struct {
 	Req *pb.BuildRequest
-	/*
-		Commit       string
-		RepoID       uint64
-		RepoName     string
-		ArtefactName string
-		Build        uint64
-	*/
 }
 
 func (s *StandardBuildInfo) GitURL() string {
@@ -29,6 +22,9 @@ func (s *StandardBuildInfo) RepositoryName() string {
 }
 func (s *StandardBuildInfo) RepositoryID() uint64 {
 	return s.Req.RepositoryID
+}
+func (s *StandardBuildInfo) ArtefactID() uint64 {
+	return s.Req.ArtefactID
 }
 func (s *StandardBuildInfo) RepositoryArtefactName() string {
 	return s.Req.ArtefactName
