@@ -16,6 +16,7 @@ message BuildRequest {
   repeated string ExcludeBuildScripts=8; // do not run these rules, despite what is configured in the repository
   repeated string IncludeBuildScripts=9; // do run these rules, in addition to what is configured in the repository
   bool RequiresDeepClone=10; // if true, run git clone with all commits and branches
+  uint64 ArtefactID=11; // passed through to buildrepo
 }
 message BuildResponse {
   bytes Stdout=1;// the output of the build process streamed back
