@@ -37,6 +37,7 @@ func Run(ctx context.Context, builder brunner, name string) (bool, error) {
 	if g == nil {
 		return false, nil
 	}
+	builder.Printf("rule \"%s\" triggers coderunner\n", name)
 	err := g.Run(ctx, builder)
 	if err != nil {
 		return true, err

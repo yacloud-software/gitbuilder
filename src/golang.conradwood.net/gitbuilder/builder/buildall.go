@@ -12,6 +12,7 @@ func (b *Builder) BuildAll(ctx context.Context) error {
 	return b.BuildWithRules(ctx, buildrules)
 }
 func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) error {
+	b.Printf("Building RepositoryID %d, Artefact %d\n", b.buildinfo.RepositoryID(), b.buildinfo.ArtefactID())
 	b.Printf("Building (%d rules)...\n", len(buildrules.Builds))
 	for _, bds := range buildrules.Builds {
 		b.Printf("Build: %s\n", bds)
@@ -43,7 +44,6 @@ func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) er
 		// a script is EITHER a coderunner OR a script (coderunner has precedence)
 		// coderunners are preferred, scripts will be migrated to coderunners once scripts work well
 		for _, scriptname := range BUILD_SCRIPTS[tagname] {
-			b.Printf("rule \"%s\" triggers script \"%s\"\n", rulename, scriptname)
 			ran, err = coderunners.Run(ctx, b, scriptname)
 			if err != nil {
 				b.Printf("Coderunner failed: %s\n", utils.ErrorString(err))
@@ -52,6 +52,7 @@ func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) er
 			if ran {
 				continue
 			}
+			b.Printf("rule \"%s\" triggers script \"%s\"\n", rulename, scriptname)
 
 			bscript := b.findscript(scriptname)
 			err = b.buildscript(ctx, bscript, target_arch, target_os)
