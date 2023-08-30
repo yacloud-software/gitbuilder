@@ -1,6 +1,6 @@
 // client create: GitBuilderClient
 /*
-  Created by /srv/home/cnw/devel/go/go-tools/src/golang.conradwood.net/gotools/protoc-gen-cnw/protoc-gen-cnw.go
+  Created by /home/cnw/devel/go/yatools/src/golang.yacloud.eu/yatools/protoc-gen-cnw/protoc-gen-cnw.go
 */
 
 /* geninfo:
@@ -13,7 +13,7 @@
    varname   : client_GitBuilderClient_0
    clientname: GitBuilderClient
    servername: GitBuilderServer
-   gscvname  : gitbuilder.GitBuilder
+   gsvcname  : gitbuilder.GitBuilder
    lockname  : lock_GitBuilderClient_0
    activename: active_GitBuilderClient_0
 */
@@ -46,3 +46,7 @@ func GetGitBuilderClient() GitBuilderClient {
 }
 
 func GitBuilderLookupID() string { return "gitbuilder.GitBuilder" } // returns the ID suitable for lookup in the registry. treat as opaque, subject to change.
+
+func init() {
+   client.RegisterDependency("gitbuilder.GitBuilder")
+}
