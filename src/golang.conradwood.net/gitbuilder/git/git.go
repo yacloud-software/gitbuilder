@@ -80,7 +80,7 @@ func GetLocalRepo(ctx context.Context, url string, fetchurls []string, shallow b
 	lr.workdir = fmt.Sprintf("%s/%d", workdir(), getworkdirctr())
 	err := lr.Clone(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("git clone failed: %w", err)
 	}
 	return lr, nil
 }
