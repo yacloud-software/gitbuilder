@@ -51,6 +51,10 @@ func (b *Builder) findscript(scriptname string) string {
 		b.Printf("Unable to find absolute current working directory: %s\n", err)
 		panic(fmt.Sprintf("Unable to find absolute current working directory: %s\n", err))
 	}
+	f, err := utils.FindFile("scripts/" + scriptname)
+	if err == nil {
+		return f
+	}
 	if utils.FileExists("/tmp/build_scripts/" + scriptname) {
 		return "/tmp/build_scripts/" + scriptname
 	}
