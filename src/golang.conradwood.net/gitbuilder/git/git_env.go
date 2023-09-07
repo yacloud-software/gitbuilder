@@ -34,7 +34,7 @@ func init() {
 	}
 	locpath = l
 }
-func getGitEnv() []string {
+func GetGitEnv() []string {
 	if !*local_gitconfig {
 		return nil
 	}

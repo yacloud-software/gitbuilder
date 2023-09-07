@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"golang.conradwood.net/gitbuilder/buildinfo"
 	"golang.conradwood.net/gitbuilder/common"
-	"golang.conradwood.net/go-easyops/utils"
 	"io"
 	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -46,11 +44,6 @@ func builder_start() {
 		panic(fmt.Sprintf("os.Getwd: %s", err))
 	}
 	locpath = l
-	bin_name, err := utils.FindFile("extra/gitcredentials-client")
-	utils.Bail("failed to find required file", err)
-	bin_name, err = filepath.Abs(bin_name)
-	utils.Bail("unable to make path absolute", err)
-	binpath = filepath.Dir(bin_name)
 }
 
 func NewBuilder(repopath string, stdout io.Writer, buildid uint64, bi buildinfo.BuildInfo) (*Builder, error) {

@@ -22,7 +22,6 @@ var (
 	maxprocs      = flag.Int("maxprocs", 4, "max processes during compile/check")
 	gocache       = flag.String("override_gocache", "", "if set use this as gocache. do not use in production")
 	locpath       string
-	binpath       string // path of extra binaries
 
 	PATH = []string{
 		"/opt/yacloud/current/ctools/dev/bin", "/opt/yacloud/current/ctools/dev/go/current/go/bin/",
@@ -164,8 +163,7 @@ LC_CTYPE=en_GB.UTF-8
 	}
 	absdir := b.GetRepoPath()
 
-	p := append([]string{binpath}, PATH...)
-	sp := strings.Join(p, ":")
+	sp := strings.Join(PATH, ":")
 
 	fmt.Printf("Bindir: \"%s\"\n", bindir)
 	os.MkdirAll(bindir+"/gobin", 0777)
