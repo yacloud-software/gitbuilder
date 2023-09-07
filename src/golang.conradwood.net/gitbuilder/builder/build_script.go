@@ -53,7 +53,12 @@ func (b *Builder) findscript(scriptname string) string {
 	}
 	f, err := utils.FindFile("scripts/" + scriptname)
 	if err == nil {
-		return f
+		pwd, err := filepath.Abs(f)
+		if err != nil {
+			fmt.Printf("WARNING: can't turn \"%s\" into absolute path: %s\n", f, err)
+			return f
+		}
+		return pwd
 	}
 	if utils.FileExists("/tmp/build_scripts/" + scriptname) {
 		return "/tmp/build_scripts/" + scriptname
@@ -72,6 +77,9 @@ func (b *Builder) findscript(scriptname string) string {
 
 }
 func (b *Builder) buildscript(ctx context.Context, fscript, target_arch, target_os string) error {
+	if !utils.FileExists(fscript) {
+		return fmt.Errorf("file %s does not exist", fscript)
+	}
 	cmd := exec.Command(fscript)
 	cmd.Dir = b.GetRepoPath()
 	fmt.Printf("Executing script %s in cwd \"%s\"\n", fscript, cmd.Dir)
@@ -99,6 +107,7 @@ func (b *Builder) buildscript(ctx context.Context, fscript, target_arch, target_
 	}
 	err = cmd.Wait()
 	if err != nil {
+		fmt.Printf("Error executing script \"%s\": %s\n", fscript, err)
 		return err
 	}
 	b.Printf("Script \"%s\" completed successfully\n", fscript)

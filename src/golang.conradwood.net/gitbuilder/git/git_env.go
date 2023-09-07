@@ -24,7 +24,7 @@ const (
 var (
 	locpath         string
 	git_debug       = flag.Bool("debug_git", false, "if true make git print debug messages")
-	local_gitconfig = flag.Bool("use_local_gitconfig", true, "if true use a local gitconfig, contained within gitbuilder")
+	local_gitconfig = flag.Bool("use_local_gitconfig", false, "if true use a local gitconfig, contained within gitbuilder")
 )
 
 func init() {

@@ -2,6 +2,7 @@ package builder
 
 import (
 	"context"
+	"fmt"
 	"golang.conradwood.net/gitbuilder/coderunners"
 	"golang.conradwood.net/go-easyops/utils"
 )
@@ -55,6 +56,7 @@ func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) er
 			b.Printf("rule \"%s\" triggers script \"%s\"\n", rulename, scriptname)
 
 			bscript := b.findscript(scriptname)
+			fmt.Printf("Found script \"%s\" here: %s\n", scriptname, bscript)
 			err = b.buildscript(ctx, bscript, target_arch, target_os)
 			if err != nil {
 				b.Printf("Script \"%s\" (as \"%s\") failed: %s\n", bscript, scriptname, utils.ErrorString(err))
