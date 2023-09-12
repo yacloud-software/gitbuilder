@@ -10,7 +10,7 @@ message FetchURL {
 }
 message BuildRequest {
   string GitURL=1; // the git repository url
-  repeated FetchURL FetchURLS=2; // any fetch urls that need to be applied before build (for gerrit patches)
+  repeated FetchURL FetchURLs=2; // any fetch urls that need to be applied before build (for gerrit patches)
   string CommitID=3; // the commit id to build
   uint64 BuildNumber=4; // the buildnumber for this build
   uint64 RepositoryID=5; // the build scripts might use this
@@ -30,7 +30,7 @@ message BuildResponse {
 }
 message LocalRepo {
   string URL=1;
-  repeated string FetchURLs=2;
+  repeated FetchURL FetchURLs=2;
   bool InUse=3;
   string WorkDir=4;
   uint32 Created=5;
