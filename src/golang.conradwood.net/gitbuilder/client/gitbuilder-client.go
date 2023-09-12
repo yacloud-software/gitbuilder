@@ -17,6 +17,7 @@ import (
 )
 
 var (
+	foo           = flag.Bool("foo", false, "if so submit a funny proto")
 	inc_scripts   = flag.String("inc_scripts", "", "comma delimited list of scripts to include in run")
 	ex_scripts    = flag.String("exc_scripts", "", "comma delimited list of scripts to exclude from run")
 	tags          = flag.String("tags", "", "routing tags to choose")
@@ -38,6 +39,10 @@ func main() {
 
 	// a context with authentication
 	authremote.Context()
+	if *foo {
+		utils.Bail("failed to foo", Foo())
+		os.Exit(0)
+	}
 	ctx := authremote.ContextWithTimeout(time.Duration(5) * time.Minute)
 	ctx = addTags(ctx)
 	if *scripts {
@@ -162,4 +167,35 @@ func cdl(cdl string) []string {
 		res = append(res, strings.Trim(s, " "))
 	}
 	return res
+}
+func Foo() error {
+	br := &pb.BuildRequest{
+		GitURL:              "https://apps.planetaryprocessing.io/gerrit/a/prober",
+		CommitID:            "7062b41e1edc7d4f1416587682e85c676c50fbeb",
+		ArtefactName:        "prober",
+		RepoName:            "prober",
+		ArtefactID:          0,
+		BuildNumber:         0,
+		ExcludeBuildScripts: []string{"DIST"},
+		FetchURLS: []*pb.FetchURL{
+			&pb.FetchURL{URL: "https://apps.planetaryprocessing.io/gerrit/a/prober", RefSpec: "refs/changes/92/92/1"},
+		},
+	}
+	ctx := authremote.ContextWithTimeout(time.Duration(300) * time.Second)
+	srv, err := pb.GetGitBuilderClient().Build(ctx, br)
+	if err != nil {
+		return err
+	}
+	for {
+		bs, err := srv.Recv()
+		if bs != nil && bs.Stdout != nil && len(bs.Stdout) > 0 {
+			fmt.Printf("%s", string(bs.Stdout))
+		} else {
+			fmt.Printf("%#v\n", bs)
+		}
+		if err != nil {
+			break
+		}
+	}
+	return nil
 }
