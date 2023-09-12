@@ -143,6 +143,30 @@ func (lr *LocalRepo) Clone(ctx context.Context) error {
 	return nil
 }
 
+// todo: recursive submodules?
+func (lr *LocalRepo) Fetch(ctx context.Context, fu *pb.FetchURL) error {
+	l := linux.NewWithContext(ctx)
+	l.SetMaxRuntime(time.Duration(300) * time.Second)
+	l.SetEnvironment(GetGitEnv())
+
+	dir := lr.workdir
+	os.MkdirAll(dir, 0777)
+	lr.Printf("Fetching from %s into %s...\n", fu.URL, dir)
+	var err error
+	var out string
+	com := []string{"git", "fetch", fu.URL}
+	if fu.RefSpec != "" {
+		com = append(com, fu.RefSpec)
+	}
+	out, err = l.SafelyExecuteWithDir(com, dir, nil)
+	if err != nil {
+		lr.Printf("Error (%s). Git-fetch %s said: %s\n", err, lr.url, out)
+		return err
+	}
+	lr.Printf("Cloned.\n")
+	return nil
+}
+
 func (lr *LocalRepo) Checkout(ctx context.Context, commitid string) error {
 	l := linux.NewWithContext(ctx)
 	l.SetMaxRuntime(time.Duration(300) * time.Second)

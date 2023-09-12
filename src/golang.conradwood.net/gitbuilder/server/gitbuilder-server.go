@@ -71,11 +71,20 @@ func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) 
 	if err != nil {
 		return err
 	}
+	defer lr.Release()
+
+	for _, fu := range req.FetchURLS {
+		err = lr.Fetch(ctx, fu)
+		if err != nil {
+			return err
+		}
+	}
+
 	err = lr.Checkout(ctx, req.CommitID)
 	if err != nil {
 		return err
 	}
-	defer lr.Release()
+
 	logmessage, err := lr.GetLogMessage(ctx)
 	if err != nil {
 		return err

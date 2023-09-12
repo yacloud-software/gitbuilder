@@ -49,4 +49,5 @@ func GitBuilderLookupID() string { return "gitbuilder.GitBuilder" } // returns t
 
 func init() {
    client.RegisterDependency("gitbuilder.GitBuilder")
+   AddService("gitbuilder.GitBuilder")
 }
