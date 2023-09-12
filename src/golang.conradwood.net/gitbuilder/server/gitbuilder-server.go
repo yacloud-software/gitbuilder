@@ -67,19 +67,22 @@ func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) 
 
 	ctx := srv.Context()
 	sw := &serverwriter{srv: srv}
-	lr, err := git.GetLocalRepo(ctx, req.GitURL, nil, !req.RequiresDeepClone, sw)
+	lr, err := git.GetLocalRepo(ctx, req.GitURL, req.FetchURLs, !req.RequiresDeepClone, sw)
 	if err != nil {
 		return err
 	}
 	defer lr.Release()
 
-	for _, fu := range req.FetchURLS {
-		err = lr.Fetch(ctx, fu)
-		if err != nil {
-			return err
+	// this is done as part of "GetLocalRepo")
+	/*
+		for _, fu := range req.FetchURLs {
+			fmt.Printf("Fetching %s %s\n", fu.URL, fu.RefSpec)
+			err = lr.Fetch(ctx, fu)
+			if err != nil {
+				return err
+			}
 		}
-	}
-
+	*/
 	err = lr.Checkout(ctx, req.CommitID)
 	if err != nil {
 		return err

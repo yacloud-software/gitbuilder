@@ -54,7 +54,7 @@ func recreate() {
 type LocalRepo struct {
 	shallow   bool
 	url       string
-	fetchurls []string
+	fetchurls []*pb.FetchURL
 	inuse     bool
 	workdir   string // the directory containing "repo"
 	stdout    io.Writer
@@ -63,7 +63,7 @@ type LocalRepo struct {
 }
 
 // clone a repo, check it out to current head in master and fetch optional urls too
-func GetLocalRepo(ctx context.Context, url string, fetchurls []string, shallow bool, stdout io.Writer) (*LocalRepo, error) {
+func GetLocalRepo(ctx context.Context, url string, fetchurls []*pb.FetchURL, shallow bool, stdout io.Writer) (*LocalRepo, error) {
 	recreate()
 	lr := &LocalRepo{
 		url:       url,
@@ -73,14 +73,17 @@ func GetLocalRepo(ctx context.Context, url string, fetchurls []string, shallow b
 		created:   time.Now(),
 		shallow:   shallow,
 	}
-	if len(lr.fetchurls) != 0 {
-		panic("cannot do fetch yet")
-	}
 	repos = append(repos, lr)
 	lr.workdir = fmt.Sprintf("%s/%d", workdir(), getworkdirctr())
 	err := lr.Clone(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("git clone failed: %w", err)
+	}
+	for _, fu := range lr.fetchurls {
+		err = lr.Fetch(ctx, fu)
+		if err != nil {
+			return nil, fmt.Errorf("git fetch failed: %w", err)
+		}
 	}
 	return lr, nil
 }
@@ -149,7 +152,7 @@ func (lr *LocalRepo) Fetch(ctx context.Context, fu *pb.FetchURL) error {
 	l.SetMaxRuntime(time.Duration(300) * time.Second)
 	l.SetEnvironment(GetGitEnv())
 
-	dir := lr.workdir
+	dir := lr.GitRepoPath()
 	os.MkdirAll(dir, 0777)
 	lr.Printf("Fetching from %s into %s...\n", fu.URL, dir)
 	var err error

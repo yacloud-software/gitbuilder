@@ -177,7 +177,7 @@ func Foo() error {
 		ArtefactID:          0,
 		BuildNumber:         0,
 		ExcludeBuildScripts: []string{"DIST"},
-		FetchURLS: []*pb.FetchURL{
+		FetchURLs: []*pb.FetchURL{
 			&pb.FetchURL{URL: "https://apps.planetaryprocessing.io/gerrit/a/prober", RefSpec: "refs/changes/92/92/1"},
 		},
 	}
