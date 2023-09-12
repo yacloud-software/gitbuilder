@@ -4,10 +4,13 @@ package gitbuilder;
 option go_package = "golang.conradwood.net/apis/gitbuilder";
 option java_package = "net.conradwood.apis.gitbuilder";
 import "golang.conradwood.net/apis/common/common.proto";
-
+message FetchURL {
+  string URL=1; // from where?
+  string RefSpec=2; // what ref? (see man git-fetch)
+}
 message BuildRequest {
   string GitURL=1; // the git repository url
-  repeated string FetchURLS=2; // any fetch urls that need to be applied before build (for gerrit patches)
+  repeated FetchURL FetchURLS=2; // any fetch urls that need to be applied before build (for gerrit patches)
   string CommitID=3; // the commit id to build
   uint64 BuildNumber=4; // the buildnumber for this build
   uint64 RepositoryID=5; // the build scripts might use this
