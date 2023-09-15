@@ -30,6 +30,7 @@ var (
 	f_repoid      = flag.Uint("repoid", 0, "repository id for scripts")
 	scripts       = flag.Bool("scripts", false, "print script names of all known scripts on builder server")
 	status        = flag.Bool("status", false, "print status of gitbuilder server")
+	artefactid    = flag.Uint64("artefactid", 0, "artefactid of the build")
 )
 
 func main() {
@@ -81,6 +82,7 @@ func main() {
 		CommitID:            *f_commitid,
 		BuildNumber:         uint64(*f_buildnumber),
 		RepositoryID:        uint64(*f_repoid),
+		ArtefactID:          *artefactid,
 		IncludeBuildScripts: include_build_scripts(),
 		ExcludeBuildScripts: exclude_build_scripts(),
 	}
