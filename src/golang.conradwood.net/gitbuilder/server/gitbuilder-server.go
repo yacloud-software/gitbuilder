@@ -62,7 +62,7 @@ func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) 
 		fmt.Printf("WARNING!!! Building without user account. (from service %s)\n", auth.UserIDString(auth.GetService(srv.Context())))
 		return errors.Unauthenticated(srv.Context(), "User account required to build")
 	}
-	fmt.Printf("-url=\"%s\" -commitid=\"%s\" -build=%d -repoid=%d -name=%s\n", req.GitURL, req.CommitID, req.BuildNumber, req.RepositoryID, req.RepoName)
+	fmt.Printf("#for gitbuilder-client: -url=\"%s\" -commitid=\"%s\" -build=%d -repoid=%d -name=%s -artefactid=%d\n", req.GitURL, req.CommitID, req.BuildNumber, req.RepositoryID, req.RepoName, req.ArtefactID)
 	fmt.Printf("  Reponame: \"%s\", Artefactname: \"%s\"\n", req.RepoName, req.ArtefactName)
 
 	ctx := srv.Context()
