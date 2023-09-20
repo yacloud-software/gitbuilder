@@ -74,6 +74,7 @@ func (b *Builder) readBuildrules() error {
 
 	// add defaults:
 	b.buildrules.Builds = append([]string{"CLEAN"}, b.buildrules.Builds...)
+	b.buildrules.Builds = append([]string{"STATICCHECK"}, b.buildrules.Builds...)
 	b.buildrules.Builds = append(b.buildrules.Builds, "DIST")
 	return nil
 }
