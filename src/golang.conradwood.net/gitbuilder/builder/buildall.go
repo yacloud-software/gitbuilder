@@ -13,7 +13,7 @@ func (b *Builder) BuildAll(ctx context.Context) error {
 	return b.BuildWithRules(ctx, buildrules)
 }
 func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) error {
-	b.Printf("Building RepositoryID %d, Artefact %d\n", b.buildinfo.RepositoryID(), b.buildinfo.ArtefactID())
+	b.Printf("Building #%d, RepositoryID %d, Artefact %d\n", b.buildinfo.BuildNumber(), b.buildinfo.RepositoryID(), b.buildinfo.ArtefactID())
 	b.Printf("Building (%d rules)...\n", len(buildrules.Builds))
 	for _, bds := range buildrules.Builds {
 		b.Printf("Build: %s\n", bds)
