@@ -15,16 +15,17 @@ type staticcheck struct {
 
 func (g *staticcheck) Run(ctx context.Context, b brunner) error {
 	if !*enable_static_check {
-		b.Printf("static check disabled")
+		b.Printf("static check disabled\n")
+		return nil
 	}
-	b.Printf("static check...")
+	b.Printf("static check...\n")
 	rc, err := repomodifier.NewRepoChangerFromDir(b.GetRepoPath())
 	if err != nil {
 		return err
 	}
 	defer rc.Close()
 	err = rc.RunCommandInPackageDirs([]string{
-		"bash",
+		"/bin/bash",
 		"-c",
 		"staticcheck `go list -m`",
 	})
