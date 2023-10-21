@@ -64,8 +64,8 @@ golang.yacloud.eu/apis/session v1.1.2643 h1:Pg1+KJ9+RHklLBbtfbJpmHxISDybE6TIGhzS
 golang.yacloud.eu/apis/session v1.1.2643/go.mod h1:cR8LJouOclM436xDVuuhPcUPP8B2v+HihXm8WCM+m90=
 golang.yacloud.eu/apis/urlcacher v1.1.2643 h1:IOc+fMop9Yj3oarn91nsvwtlz5TXxpw6BNX+i7DlG+M=
 golang.yacloud.eu/apis/urlcacher v1.1.2643/go.mod h1:bjRGeCBAEgwmHJoiCqiI/wTmi8rYyNSYgT5G/8ZtegQ=
-golang.yacloud.eu/yatools v0.1.21193 h1:TDA90aLM4T70H7DZHdSy6CbCaY7CUAG6BoxmnELbkxo=
-golang.yacloud.eu/yatools v0.1.21193/go.mod h1:wsK795mUArXmfLbyBxqlejaXA4215EvZja6k+PB2rbk=
+golang.yacloud.eu/yatools v0.1.21337 h1:c05gKQNeAd9IZUUZEH5crfa5vrismIEZb54NgjoByCA=
+golang.yacloud.eu/yatools v0.1.21337/go.mod h1:pE1MSyr/KV3D9jYhpMJmElrqUz8HKuoPk1SEHtxGLJc=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20230711160842-782d3b101e98 h1:bVf09lpb+OJbByTj913DRJioFFAjf/ZGxEz7MajTp2U=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20230711160842-782d3b101e98/go.mod h1:TUfxEVdsvPg18p6AslUXFoLdpED4oBnGwyqk3dV1XzM=
 google.golang.org/grpc v1.58.3 h1:BjnpXut1btbtgN/6sp+brB2Kbm2LjNXnidYujAVbSoQ=
