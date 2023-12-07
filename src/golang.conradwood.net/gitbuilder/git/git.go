@@ -216,3 +216,4 @@ func (lr *LocalRepo) GetLogMessage(ctx context.Context) (string, error) {
 	}
 	return logmessage, nil
 }
+

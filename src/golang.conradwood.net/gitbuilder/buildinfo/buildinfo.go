@@ -10,3 +10,4 @@ type BuildInfo interface {
 	IsScriptIncluded(name string) bool
 	GitURL() string
 }
+

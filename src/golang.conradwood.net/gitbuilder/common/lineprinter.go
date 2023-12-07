@@ -84,3 +84,4 @@ func (l *LinePrinter) printLine(line string) {
 		l.linelen = 0
 	}
 }
+

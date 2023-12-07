@@ -97,3 +97,4 @@ func (b *BuildRules) CheckBuildType(buildtype string) string {
 	}
 	return ""
 }
+

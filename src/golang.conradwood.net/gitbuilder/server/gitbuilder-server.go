@@ -31,13 +31,13 @@ func main() {
 
 	sd := server.NewServerDef()
 	sd.SetPort(*port)
-	sd.Register = server.Register(
+	sd.SetRegister(server.Register(
 		func(server *grpc.Server) error {
 			e := new(echoServer)
 			pb.RegisterGitBuilderServer(server, e)
 			return nil
 		},
-	)
+	))
 	err = server.ServerStartup(sd)
 	utils.Bail("Unable to start server", err)
 	os.Exit(0)
@@ -140,3 +140,4 @@ func (s *serverwriter) Write(buf []byte) (int, error) {
 	}
 	return len(buf), nil
 }
+
