@@ -69,5 +69,6 @@ int main(int argc,char **argv) {
     }
 
 
-
+for go:
+GO_CGO_ENABLED=true|false
 
