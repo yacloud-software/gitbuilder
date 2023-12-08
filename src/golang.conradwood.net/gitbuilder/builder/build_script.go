@@ -167,6 +167,8 @@ LC_CTYPE=en_GB.UTF-8
 
 	fmt.Printf("Bindir: \"%s\"\n", bindir)
 	os.MkdirAll(bindir+"/gobin", 0777)
+	res = append(res, fmt.Sprintf("CGO_ENABLED=%s", b.buildrules.Go_CGO_EnabledAsEnv()))
+	res = append(res, fmt.Sprintf("EXCLUDE_GO_DIRS=%s", b.buildrules.Go_ExcludeDirsAsEnv()))
 	res = append(res, fmt.Sprintf("PATH=%s", sp))
 	res = append(res, fmt.Sprintf("GIT_URL=%s", b.buildinfo.GitURL()))
 	res = append(res, fmt.Sprintf("BUILD_NUMBER=%d", b.buildid))
@@ -255,4 +257,3 @@ func (b *Builder) addContextEnv(ctx context.Context, cmd *exec.Cmd) error {
 func GetAuthManagerClient() am.AuthManagerServiceClient {
 	return authremote.GetAuthManagerClient()
 }
-

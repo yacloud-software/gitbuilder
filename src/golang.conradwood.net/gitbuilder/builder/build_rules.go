@@ -13,10 +13,12 @@ const (
 )
 
 type BuildRules struct {
-	Prebuild   int
-	PostCommit int
-	Builds     []string
-	Targets    []string
+	Prebuild      int
+	PostCommit    int
+	Builds        []string
+	Targets       []string
+	ExcludeGoDirs []string
+	GoCGOEnabled  bool
 }
 
 func (b *Builder) readBuildrules() error {
@@ -48,6 +50,14 @@ func (b *Builder) readBuildrules() error {
 			rules.Prebuild, err = parseAction(sp[1])
 		} else if sp[0] == "POSTCOMMIT" {
 			rules.PostCommit, err = parseAction(sp[1])
+		} else if sp[0] == "GO_CGO_ENABLED" {
+			b, err := parseBoolean(sp[1])
+			if err != nil {
+				return fmt.Errorf("%s invalid boolean: %s", sp[0], err)
+			}
+			rules.GoCGOEnabled = b
+		} else if sp[0] == "GO_EXCLUDE_DIRS" {
+			rules.ExcludeGoDirs = strings.Split(sp[1], ",")
 		} else if sp[0] == "BUILDS" {
 			gotBuilds = true
 			for _, bs := range strings.Split(sp[1], ",") {
@@ -98,3 +108,27 @@ func (b *BuildRules) CheckBuildType(buildtype string) string {
 	return ""
 }
 
+func (br *BuildRules) Go_CGO_EnabledAsEnv() string {
+	if br.GoCGOEnabled {
+		return "1"
+	}
+	return "0"
+}
+func (br *BuildRules) Go_ExcludeDirsAsEnv() string {
+	if len(br.ExcludeGoDirs) == 0 {
+		return ""
+	}
+	s := strings.Join(br.ExcludeGoDirs, " ")
+	return s
+}
+
+func parseBoolean(s string) (bool, error) {
+	s = strings.ToLower(s)
+	if s == "true" || s == "yes" || s == "on" {
+		return true, nil
+	}
+	if s == "false" || s == "no" || s == "off" {
+		return false, nil
+	}
+	return false, fmt.Errorf("\"%s\" is not valid for booleans", s)
+}
