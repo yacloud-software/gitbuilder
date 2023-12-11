@@ -257,3 +257,4 @@ func (b *Builder) addContextEnv(ctx context.Context, cmd *exec.Cmd) error {
 func GetAuthManagerClient() am.AuthManagerServiceClient {
 	return authremote.GetAuthManagerClient()
 }
+

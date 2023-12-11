@@ -28,3 +28,4 @@ func init() {
 	ai.RegisterAppInfo(avi)
 }
 
+

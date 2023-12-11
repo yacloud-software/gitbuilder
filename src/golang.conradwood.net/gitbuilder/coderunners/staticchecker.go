@@ -35,3 +35,4 @@ func (g *staticcheck) Run(ctx context.Context, b brunner) error {
 	return nil
 }
 
+

@@ -41,3 +41,4 @@ func (s *StandardBuildInfo) IsScriptIncluded(scriptname string) bool {
 	return true
 }
 
+
