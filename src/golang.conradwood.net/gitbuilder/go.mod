@@ -3,11 +3,11 @@ module golang.conradwood.net/gitbuilder
 go 1.18
 
 require (
-	golang.conradwood.net/apis/auth v1.1.2727
-	golang.conradwood.net/apis/common v1.1.2727
+	golang.conradwood.net/apis/auth v1.1.2729
+	golang.conradwood.net/apis/common v1.1.2729
 	golang.conradwood.net/apis/gitbuilder v0.0.0-00010101000000-000000000000
 	golang.conradwood.net/apis/protorenderer v1.1.2673
-	golang.conradwood.net/go-easyops v0.1.23649
+	golang.conradwood.net/go-easyops v0.1.23854
 	golang.yacloud.eu/yatools v0.1.22040
 	google.golang.org/grpc v1.60.0
 )
@@ -27,7 +27,7 @@ require (
 	golang.conradwood.net/apis/echoservice v1.1.2673 // indirect
 	golang.conradwood.net/apis/errorlogger v1.1.2673 // indirect
 	golang.conradwood.net/apis/framework v1.1.2673 // indirect
-	golang.conradwood.net/apis/goeasyops v1.1.2727 // indirect
+	golang.conradwood.net/apis/goeasyops v1.1.2729 // indirect
 	golang.conradwood.net/apis/h2gproxy v1.1.2673 // indirect
 	golang.conradwood.net/apis/objectstore v1.1.2673 // indirect
 	golang.conradwood.net/apis/registry v1.1.2673 // indirect
@@ -35,7 +35,7 @@ require (
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.yacloud.eu/apis/fscache v1.1.2673 // indirect
-	golang.yacloud.eu/apis/session v1.1.2727 // indirect
+	golang.yacloud.eu/apis/session v1.1.2729 // indirect
 	golang.yacloud.eu/apis/urlcacher v1.1.2673 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231002182017-d307bd883b97 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
