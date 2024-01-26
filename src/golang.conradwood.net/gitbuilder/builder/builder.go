@@ -3,29 +3,15 @@ package builder
 import (
 	"fmt"
 	"golang.conradwood.net/gitbuilder/buildinfo"
+	"golang.conradwood.net/gitbuilder/buildrules"
 	"golang.conradwood.net/gitbuilder/common"
 	"io"
 	"os"
 	"time"
 )
 
-var (
-	// either name of scripts or coderunners. order of the array matters
-	BUILD_SCRIPTS = map[string][]string{
-		"STANDARD_PROTOS": []string{"protos-build.sh"},
-		"STANDARD_GO":     []string{"coderunner-go-version", "go-build.sh"},
-		"KICAD":           []string{"kicad-build.sh"},
-		"STANDARD_JAVA":   []string{"java-build.sh"},
-		"AUTOBUILD_SH":    []string{"autobuild.sh"},
-		"CLEAN":           []string{"clean-build.sh"},
-		"DIST":            []string{"dist.sh"},
-		"GO_VERSION":      []string{"coderunner-go-version"},
-		"GO_MODULES":      []string{"coderunner-gomodule"},
-	}
-)
-
 type Builder struct {
-	buildrules *BuildRules
+	buildrules *buildrules.BuildRules
 	path       string // path containing .git
 	stdout     io.Writer
 	buildid    uint64 // for the build management system
@@ -55,17 +41,18 @@ func NewBuilder(repopath string, stdout io.Writer, buildid uint64, bi buildinfo.
 		timestamp: time.Now(),
 		printer:   &common.LinePrinter{MaxLineLength: 256, Prefix: fmt.Sprintf("[builder %s] ", bi.RepositoryName())},
 	}
-	err := b.readBuildrules()
+	br, err := buildrules.Read(b, b.GetRepoPath()+"/BUILD_RULES")
 	if err != nil {
 		return nil, err
 	}
+	b.buildrules = br
 	return b, nil
 }
 
 // get the names of all buildscripts we currently know
 func GetBuildScriptNames() []string {
 	var res []string
-	for k, _ := range BUILD_SCRIPTS {
+	for k, _ := range buildrules.BUILD_SCRIPTS {
 		res = append(res, k)
 	}
 	return res
@@ -88,7 +75,3 @@ func (b *Builder) Printf(txt string, args ...interface{}) {
 func (b *Builder) GetRepoPath() string {
 	return b.path
 }
-
-
-
-

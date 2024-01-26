@@ -3,6 +3,7 @@ package builder
 import (
 	"context"
 	"fmt"
+	"golang.conradwood.net/gitbuilder/buildrules"
 	"golang.conradwood.net/gitbuilder/coderunners"
 	"golang.conradwood.net/go-easyops/utils"
 )
@@ -12,16 +13,16 @@ func (b *Builder) BuildAll(ctx context.Context) error {
 	buildrules := b.buildrules
 	return b.BuildWithRules(ctx, buildrules)
 }
-func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) error {
+func (b *Builder) BuildWithRules(ctx context.Context, br *buildrules.BuildRules) error {
 	b.Printf("Building #%d, RepositoryID %d, Artefact %d\n", b.buildinfo.BuildNumber(), b.buildinfo.RepositoryID(), b.buildinfo.ArtefactID())
-	b.Printf("Building (%d rules)...\n", len(buildrules.Builds))
-	for _, bds := range buildrules.Builds {
+	b.Printf("Building (%d rules)...\n", len(br.Builds))
+	for _, bds := range br.Builds {
 		b.Printf("Build: %s\n", bds)
 	}
 	target_arch := "amd64"
 	target_os := "linux"
 
-	for _, rulename := range buildrules.Builds {
+	for _, rulename := range br.Builds {
 		b.Printf("rule: \"%s\"\n", rulename)
 		if !b.BuildInfo().IsScriptIncluded(rulename) {
 			b.Printf("Rule skipped (it is explicitly excluded in buildrequest)\n")
@@ -37,14 +38,14 @@ func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) er
 			continue
 		}
 
-		tagname := buildrules.CheckBuildType(rulename)
+		tagname := br.CheckBuildType(rulename)
 		if tagname == "" {
 			b.Printf("rule \"%s\" is not valid\n", rulename)
 			continue
 		}
 		// a script is EITHER a coderunner OR a script (coderunner has precedence)
 		// coderunners are preferred, scripts will be migrated to coderunners once scripts work well
-		for _, scriptname := range BUILD_SCRIPTS[tagname] {
+		for _, scriptname := range buildrules.BUILD_SCRIPTS[tagname] {
 			ran, err = coderunners.Run(ctx, b, scriptname)
 			if err != nil {
 				b.Printf("Coderunner failed: %s\n", utils.ErrorString(err))
@@ -67,7 +68,3 @@ func (b *Builder) BuildWithRules(ctx context.Context, buildrules *BuildRules) er
 
 	return nil
 }
-
-
-
-

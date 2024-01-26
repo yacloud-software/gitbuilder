@@ -8,6 +8,7 @@ import (
 	pb "golang.conradwood.net/apis/gitbuilder"
 	_ "golang.conradwood.net/gitbuilder/appinfo"
 	"golang.conradwood.net/gitbuilder/builder"
+	"golang.conradwood.net/gitbuilder/buildrules"
 	"golang.conradwood.net/go-easyops/authremote"
 	"golang.conradwood.net/go-easyops/utils"
 	"io"
@@ -66,7 +67,7 @@ func main() {
 				},
 			},
 		)
-		br := &builder.BuildRules{
+		br := &buildrules.BuildRules{
 			Builds: []string{"STANDARD_GO"},
 		}
 		//br.Builds = []string{"GO_MODULES"}
@@ -201,7 +202,3 @@ func Foo() error {
 	}
 	return nil
 }
-
-
-
-
