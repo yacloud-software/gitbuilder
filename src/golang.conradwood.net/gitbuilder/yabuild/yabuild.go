@@ -31,10 +31,15 @@ func main() {
 
 	fmt.Printf("Yabuilding %s...\n", topdir)
 
+	if *output_dir != "" {
+		utils.Bail("failed to create output dir", utils.RecreateSafely(*output_dir))
+	}
+
 	rdir := *output_dir
 	if rdir == "" {
 		rdir = topdir
 	}
+
 	rec, err := filetransfer.NewReceiver(rdir)
 	utils.Bail("failed to create receiver", err)
 
