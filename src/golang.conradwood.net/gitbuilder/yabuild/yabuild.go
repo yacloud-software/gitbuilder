@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	pb "golang.conradwood.net/apis/gitbuilder"
+	"golang.conradwood.net/gitbuilder/filetransfer"
 	"golang.conradwood.net/go-easyops/authremote"
 	"golang.conradwood.net/go-easyops/utils"
 	"io"
@@ -33,7 +34,8 @@ func main() {
 	utils.Bail("failed to start build: %s\n", err)
 
 	fmt.Printf("Sending files to server...\n")
-	err = transfer_files(srv, topdir)
+	sender := filetransfer.NewSender(srv, send_function)
+	err = sender.SendFiles(topdir)
 	utils.Bail("failed to transfer files to server", err)
 
 	fmt.Printf("Starting build...\n")
@@ -66,4 +68,11 @@ func find_top_of_git_dir(builddir string) (string, error) {
 		s = filepath.Dir(s)
 	}
 	return s, nil
+}
+func send_function(opaque interface{}, filename string, data []byte) error {
+	br := &pb.BuildLocalFiles{
+		FileTransfer: &pb.FileTransferPart{Filename: filename, Data: data},
+	}
+	err := opaque.(pb.GitBuilder_BuildFromLocalFilesClient).Send(br)
+	return err
 }

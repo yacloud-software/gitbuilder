@@ -29,7 +29,7 @@ func Run(ctx context.Context, builder brunner, name string) (bool, error) {
 		g = &gomodule{}
 	} else if name == "coderunner-go-version" {
 		g = goversion{}
-	} else if name == "protos-build.sh" && *use_internal_proto_builder {
+	} else if name == "STANDARD_PROTOS" || name == "protos-build.sh" && *use_internal_proto_builder {
 		g = protobuilder{}
 	} else if name == "STATICCHECK" {
 		g = &staticcheck{}
@@ -46,7 +46,3 @@ func Run(ctx context.Context, builder brunner, name string) (bool, error) {
 	}
 	return true, nil
 }
-
-
-
-
