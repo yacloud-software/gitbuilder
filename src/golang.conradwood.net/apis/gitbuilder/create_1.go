@@ -51,7 +51,3 @@ func init() {
    client.RegisterDependency("gitbuilder.GitBuilder")
    AddService("gitbuilder.GitBuilder")
 }
-
-
-
-

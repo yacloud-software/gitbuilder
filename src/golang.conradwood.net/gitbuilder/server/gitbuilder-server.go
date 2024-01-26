@@ -55,6 +55,7 @@ func (e *echoServer) GetBuildScripts(ctx context.Context, req *common.Void) (*pb
 func (e *echoServer) GetLocalRepos(ctx context.Context, req *common.Void) (*pb.LocalRepoList, error) {
 	return git.GetLocalRepos(), nil
 }
+
 func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) error {
 	u := auth.GetUser(srv.Context())
 	fmt.Printf("Building (as user %s):\n", auth.UserIDString(u))
@@ -140,7 +141,3 @@ func (s *serverwriter) Write(buf []byte) (int, error) {
 	}
 	return len(buf), nil
 }
-
-
-
-
