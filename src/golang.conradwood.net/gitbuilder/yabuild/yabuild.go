@@ -8,6 +8,7 @@ import (
 	"golang.conradwood.net/go-easyops/authremote"
 	"golang.conradwood.net/go-easyops/utils"
 	"io"
+	"os"
 	"path/filepath"
 	"time"
 )
@@ -45,9 +46,14 @@ func main() {
 	sender := filetransfer.NewSender(srv, send_function)
 	err = sender.SendFiles(topdir)
 	utils.Bail("failed to transfer files to server", err)
+	fmt.Printf("Sent %d files to server\n", sender.FilesSent())
 
 	fmt.Printf("Starting build...\n")
-	blr := &pb.BuildLocalRequest{RepositoryID: 2, RepoName: "local_build", ArtefactID: 2}
+	blr := &pb.BuildLocalRequest{RepositoryID: 2,
+		RepoName:    "local_build",
+		BuildNumber: 5,
+		ArtefactID:  2,
+	}
 	err = srv.Send(&pb.BuildLocalFiles{Request: blr})
 	utils.Bail("failed to start build", err)
 
@@ -81,7 +87,7 @@ func main() {
 			utils.Bail("failed to receive file", err)
 		}
 	}
-	fmt.Printf("Stored files in %s\n", rdir)
+	fmt.Printf("Stored %d files in %s\n", rec.FilesReceived(), rdir)
 }
 func find_top_of_git_dir(builddir string) (string, error) {
 	s := builddir
@@ -90,9 +96,9 @@ func find_top_of_git_dir(builddir string) (string, error) {
 	}
 	return s, nil
 }
-func send_function(opaque interface{}, filename string, data []byte) error {
+func send_function(opaque interface{}, filename string, fi os.FileInfo, data []byte) error {
 	br := &pb.BuildLocalFiles{
-		FileTransfer: &pb.FileTransferPart{Filename: filename, Data: data},
+		FileTransfer: &pb.FileTransferPart{Filename: filename, Data: data, Permissions: uint32(fi.Mode().Perm())},
 	}
 	err := opaque.(pb.GitBuilder_BuildFromLocalFilesClient).Send(br)
 	return err

@@ -2,13 +2,15 @@ package filetransfer
 
 import (
 	"fmt"
+	"io"
+	"path/filepath"
 	//	pb "golang.conradwood.net/apis/gitbuilder"
 	"golang.conradwood.net/go-easyops/utils"
 	"os"
 	"strings"
 )
 
-func NewSender(opaque interface{}, f func(opaque interface{}, filename string, data []byte) error) *Sender {
+func NewSender(opaque interface{}, f func(opaque interface{}, filename string, fi os.FileInfo, data []byte) error) *Sender {
 	if f == nil {
 		panic("missing send function")
 	}
@@ -34,9 +36,10 @@ func (s *Sender) SendSomeFiles(sourcedir string, filenames []string) error {
 
 type Sender struct {
 	opaque    interface{}
-	sendfkt   func(opaque interface{}, filename string, data []byte) error
+	sendfkt   func(opaque interface{}, filename string, fi os.FileInfo, data []byte) error
 	sourcedir string
 	filenames []string
+	count     int
 }
 
 func (s *Sender) send() error {
@@ -44,7 +47,8 @@ func (s *Sender) send() error {
 		if strings.HasSuffix(rel, "~") {
 			return nil
 		}
-		if strings.HasPrefix(rel, "#") {
+		filename := filepath.Base(rel)
+		if strings.HasPrefix(filename, "#") {
 			return nil
 		}
 		if strings.HasPrefix(rel, ".git/") {
@@ -70,31 +74,43 @@ func (s *Sender) send_some_files() error {
 			return err
 		}
 	}
+	s.count = len(s.filenames)
 	return nil
 }
-
+func (s *Sender) FilesSent() int {
+	return s.count
+}
 func (s *Sender) stream_file(filename string) error {
 	if s.sendfkt == nil {
 		return fmt.Errorf("no send function set")
+	}
+	fileInfo, err := os.Stat(s.sourcedir + "/" + filename)
+	if err != nil {
+		return err
 	}
 	fd, err := os.Open(s.sourcedir + "/" + filename)
 	if err != nil {
 		return err
 	}
+	defer fd.Close()
 	buf := make([]byte, 2048)
+	first := true // must send at least one packet, even if file is 0 bytes long
 	for {
 		n, err := fd.Read(buf)
-		if n > 0 {
-			err = s.sendfkt(s.opaque, filename, buf[:n])
+		if first || n > 0 {
+			err = s.sendfkt(s.opaque, filename, fileInfo, buf[:n])
 			if err != nil {
 				fmt.Printf("Send error: %s\n", utils.ErrorString(err))
 				return err
 			}
 		}
+		first = false
 		if err != nil {
-			break
+			if err == io.EOF {
+				break
+			}
+			return err
 		}
 	}
-	defer fd.Close()
 	return nil
 }

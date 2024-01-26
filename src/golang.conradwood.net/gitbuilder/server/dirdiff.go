@@ -27,6 +27,10 @@ type ChangedFile struct {
 	filename string
 }
 
+// returns true if the "change" was that the file has been removed
+func (cf *ChangedFile) IsRemoved() bool {
+	return cf.removed
+}
 func (cf *ChangedFile) RelativeFilename() string {
 	return cf.filename
 }

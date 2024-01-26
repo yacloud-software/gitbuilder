@@ -84,13 +84,14 @@ func (e *echoServer) BuildFromLocalFiles(srv pb.GitBuilder_BuildFromLocalFilesSe
 		}
 		if r.Request != nil {
 			blr = r.Request
-			t.Close()
 			break
 		}
 	}
+	t.Close()
 	if blr == nil {
 		return fmt.Errorf("No build request received")
 	}
+	fmt.Printf("Received %d files and stored them in %s\n", t.FilesReceived(), build_dir)
 	hint, err := dd.Remember()
 	if err != nil {
 		return err
@@ -107,6 +108,7 @@ func (e *echoServer) BuildFromLocalFiles(srv pb.GitBuilder_BuildFromLocalFilesSe
 		ArtefactID:          blr.ArtefactID,
 		ExcludeBuildScripts: []string{"DIST"},
 	}
+	build_local_fill_defaults(req)
 	bd, err := builder.NewBuilder(build_dir, sw, req.BuildNumber, &builder.StandardBuildInfo{Req: req})
 
 	if err != nil {
@@ -139,6 +141,9 @@ func (e *echoServer) BuildFromLocalFiles(srv pb.GitBuilder_BuildFromLocalFilesSe
 	}
 	var filenames_to_send []string
 	for _, cf := range changed_files {
+		if cf.IsRemoved() {
+			continue
+		}
 		filenames_to_send = append(filenames_to_send, cf.RelativeFilename())
 	}
 	sender := filetransfer.NewSender(srv, send_function)
@@ -150,9 +155,13 @@ func (e *echoServer) BuildFromLocalFiles(srv pb.GitBuilder_BuildFromLocalFilesSe
 	return nil
 }
 
-func send_function(opaque interface{}, filename string, data []byte) error {
+func send_function(opaque interface{}, filename string, fi os.FileInfo, data []byte) error {
 	br := &pb.BuildResponse{
-		FileTransfer: &pb.FileTransferPart{Filename: filename, Data: data},
+		FileTransfer: &pb.FileTransferPart{
+			Filename:    filename,
+			Permissions: uint32(fi.Mode().Perm()),
+			Data:        data,
+		},
 	}
 	err := opaque.(pb.GitBuilder_BuildFromLocalFilesServer).Send(br)
 	return err
@@ -226,5 +235,10 @@ func build_local_cleaner() {
 
 		builddirlock.Unlock()
 
+	}
+}
+func build_local_fill_defaults(req *pb.BuildRequest) {
+	if req.BuildNumber == 0 {
+		req.BuildNumber = 1
 	}
 }

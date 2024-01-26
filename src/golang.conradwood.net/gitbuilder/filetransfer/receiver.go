@@ -8,16 +8,20 @@ import (
 )
 
 type Receiver struct {
-	dir     string
-	curfile *filehandle
+	dir           string
+	filesReceived int
+	curfile       *filehandle
 }
 type filehandle struct {
-	filename string
-	fd       *os.File
+	filename     string
+	fullfilename string
+	fd           *os.File
+	permissions  uint32
 }
 type FileTransferPacket interface {
 	GetFilename() string
 	GetData() []byte
+	GetPermissions() uint32
 }
 
 func NewReceiver(dir string) (*Receiver, error) {
@@ -43,7 +47,9 @@ func (t *Receiver) Receive(data FileTransferPacket) error {
 		}
 		t.curfile = cf
 	}
-
+	if data.GetPermissions() != 0 {
+		t.curfile.permissions = data.GetPermissions()
+	}
 	err := t.curfile.Write(data.GetData())
 	return err
 }
@@ -53,9 +59,13 @@ func (t *Receiver) Close() {
 		t.curfile = nil
 	}
 }
+func (t *Receiver) FilesReceived() int {
+	return t.filesReceived
+}
 func (t *Receiver) openFile(filename string) (*filehandle, error) {
-	res := &filehandle{filename: filename}
+	t.filesReceived++
 	fname := t.dir + "/" + filename
+	res := &filehandle{filename: filename, fullfilename: fname}
 	dir := filepath.Dir(fname)
 	//fmt.Printf("Creating dir \"%s\"\n", dir)
 	err := os.MkdirAll(dir, 0777)
@@ -82,4 +92,14 @@ func (fh *filehandle) Close() {
 	}
 	fh.fd.Close()
 	fh.fd = nil
+
+	if fh.permissions != 0 {
+		err := os.Chmod(fh.fullfilename, os.FileMode(fh.permissions))
+		if err != nil {
+			fmt.Printf("Failed to chmod: %s\n", err)
+		}
+	} else {
+		fmt.Printf("NOT chmodded %s to %d\n", fh.fullfilename, fh.permissions)
+	}
+
 }
