@@ -64,6 +64,20 @@ message BuildLocalFiles {
   BuildLocalRequest Request=2; // if that is sent the build starts (and all files will be closed)
 }
 
+message BuildRuleDef {
+  string BuildType=1; // any of the supported rules, e.g. "STANDARD_GO"
+  string CompilerVersion=2; // default "latest"
+  string OS=3; // default "linux"
+  string CPU=4; // default "amd64"
+}
+
+// yaml file defining build rules
+message BuildRules {
+  string PreBuild=1; // typically and default "reject"
+  string PostCommit=2; // typically and default "do"
+  repeated BuildRuleDef Rules=3;
+}
+
 // this is doing the actual build. It checksout a git repository, runs the build
 // and uploads the artefacts
 service GitBuilder {
