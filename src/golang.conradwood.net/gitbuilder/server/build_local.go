@@ -179,6 +179,9 @@ func build_local_cleaner() {
 			if !bd.please_remove_me {
 				continue
 			}
+			if time.Since(bd.created) < time.Duration(10)*time.Minute {
+				continue
+			}
 			err := os.Rename(bd.dirname, bd.dirname+"_DEL")
 			if err == nil {
 				fmt.Printf("build local dir %s marked for deletion\n", bd.dirname)
