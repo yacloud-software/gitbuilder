@@ -45,7 +45,8 @@ message BuildScriptList {
 }
 message FileTransferPart {
   string Filename=1; // relative path. file on disk will be opened on first access. Any file previously open, will be closed
-  bytes Data=2; // data to write to file 
+  bytes Data=2; // data to write to file
+  uint32 Permissions=3; // unix permissions
 }
 
 message BuildLocalRequest {
