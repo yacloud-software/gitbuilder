@@ -28,16 +28,15 @@ func (s *Sender) SendFiles(sourcedir string) error {
 // send some files in dir to peer
 func (s *Sender) SendSomeFiles(sourcedir string, filenames []string) error {
 	s.sourcedir = sourcedir
-	s.send_filenames = filenames
-	return s.send()
+	s.filenames = filenames
+	return s.send_some_files()
 }
 
 type Sender struct {
-	opaque         interface{}
-	sendfkt        func(opaque interface{}, filename string, data []byte) error
-	sourcedir      string
-	send_filenames []string
-	filenames      []string
+	opaque    interface{}
+	sendfkt   func(opaque interface{}, filename string, data []byte) error
+	sourcedir string
+	filenames []string
 }
 
 func (s *Sender) send() error {
@@ -55,6 +54,12 @@ func (s *Sender) send() error {
 		s.filenames = append(s.filenames, rel)
 		return nil
 	})
+	if err != nil {
+		return err
+	}
+	return s.send_some_files()
+}
+func (s *Sender) send_some_files() error {
 	p := utils.ProgressReporter{}
 	p.SetTotal(uint64(len(s.filenames)))
 	for _, f := range s.filenames {
@@ -65,7 +70,7 @@ func (s *Sender) send() error {
 			return err
 		}
 	}
-	return err
+	return nil
 }
 
 func (s *Sender) stream_file(filename string) error {

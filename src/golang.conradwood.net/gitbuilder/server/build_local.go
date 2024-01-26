@@ -4,25 +4,67 @@ import (
 	"fmt"
 	pb "golang.conradwood.net/apis/gitbuilder"
 	"golang.conradwood.net/gitbuilder/builder"
+	"golang.conradwood.net/gitbuilder/common"
 	"golang.conradwood.net/gitbuilder/filetransfer"
 	"golang.conradwood.net/go-easyops/utils"
+	"os"
 	"sync"
+	"time"
 )
 
 var (
 	builddirlock sync.Mutex
+	build_dirs   []*build_local_dir
 )
 
+type build_local_dir struct {
+	dirname          string
+	created          time.Time
+	seq              int
+	please_remove_me bool
+	delete_me        bool
+	deleted          bool
+}
+
+func init() {
+	go build_local_cleaner()
+}
 func get_local_build_dir() string {
 	builddirlock.Lock()
 	defer builddirlock.Unlock()
-	return "/tmp/x/buildlocal"
+	i := 0
+	dirname := ""
+	for {
+		dirname = fmt.Sprintf("%s/buildlocal/%d", common.WorkDir(), i)
+		if !utils.FileExists(dirname) {
+			break
+		}
+		i++
+	}
+	bld := &build_local_dir{dirname: dirname, created: time.Now(), seq: i}
+	build_dirs = append(build_dirs, bld)
+	return bld.dirname
+}
+func remove_build_dir(dir string) {
+	builddirlock.Lock()
+	defer builddirlock.Unlock()
+	for _, bd := range build_dirs {
+		if bd.dirname == dir {
+			bd.please_remove_me = true
+		}
+	}
+
 }
 
 func (e *echoServer) BuildFromLocalFiles(srv pb.GitBuilder_BuildFromLocalFilesServer) error {
 	build_dir := get_local_build_dir()
+	defer remove_build_dir(build_dir)
+	err := utils.RecreateSafely(build_dir)
+	if err != nil {
+		return err
+	}
 	dd := &Dirdiff{build_dir}
-	t, err := filetransfer.New(build_dir)
+	t, err := filetransfer.NewReceiver(build_dir)
 	if err != nil {
 		return err
 	}
@@ -126,4 +168,60 @@ func (s *localwriter) Write(buf []byte) (int, error) {
 		return 0, err
 	}
 	return len(buf), nil
+}
+
+func build_local_cleaner() {
+	for {
+		time.Sleep(time.Duration(1) * time.Minute)
+
+		builddirlock.Lock()
+		for _, bd := range build_dirs {
+			if !bd.please_remove_me {
+				continue
+			}
+			err := os.Rename(bd.dirname, bd.dirname+"_DEL")
+			if err == nil {
+				fmt.Printf("build local dir %s marked for deletion\n", bd.dirname)
+				bd.dirname = bd.dirname + "_DEL"
+				bd.delete_me = true
+			} else {
+				err = utils.RemoveAll(bd.dirname)
+				if err != nil {
+					fmt.Printf("Failed to delete %s: %s\n", bd.dirname, err)
+				} else {
+					bd.deleted = true
+				}
+			}
+
+		}
+		builddirlock.Unlock()
+
+		// delete those which were renamed and marked as such
+		for _, bd := range build_dirs {
+			if !bd.delete_me {
+				continue
+			}
+			err := utils.RemoveAll(bd.dirname)
+			if err != nil {
+				fmt.Printf("Failed to delete %s: %s\n", bd.dirname, err)
+			} else {
+				bd.deleted = true
+			}
+		}
+
+		builddirlock.Lock()
+
+		// remove the deleted ones from the list
+		var nbuild []*build_local_dir
+		for _, bd := range build_dirs {
+			if bd.deleted {
+				continue
+			}
+			nbuild = append(nbuild, bd)
+		}
+		build_dirs = nbuild
+
+		builddirlock.Unlock()
+
+	}
 }

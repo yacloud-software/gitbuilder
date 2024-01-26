@@ -13,6 +13,7 @@ import (
 )
 
 var (
+	output_dir  = flag.String("output", "", "if set write compiled files to `directory`, otherwise build dir is used")
 	ctx_timeout = flag.Duration("timeout", time.Duration(15)*time.Minute, "timeout for file-transfer and build")
 )
 
@@ -29,6 +30,13 @@ func main() {
 
 	fmt.Printf("Yabuilding %s...\n", topdir)
 
+	rdir := *output_dir
+	if rdir == "" {
+		rdir = topdir
+	}
+	rec, err := filetransfer.NewReceiver(rdir)
+	utils.Bail("failed to create receiver", err)
+
 	ctx := authremote.ContextWithTimeout(*ctx_timeout)
 	srv, err := pb.GetGitBuilderClient().BuildFromLocalFiles(ctx)
 	utils.Bail("failed to start build: %s\n", err)
@@ -42,6 +50,8 @@ func main() {
 	blr := &pb.BuildLocalRequest{RepositoryID: 2, RepoName: "local_build", ArtefactID: 2}
 	err = srv.Send(&pb.BuildLocalFiles{Request: blr})
 	utils.Bail("failed to start build", err)
+
+	printed := false
 	for {
 		r, err := srv.Recv()
 		if err != nil {
@@ -59,8 +69,19 @@ func main() {
 		if r.Success {
 			fmt.Printf("**** Build successful *******\n")
 		}
-
+		ft := r.FileTransfer
+		if ft != nil {
+			if !printed {
+				fmt.Printf("Receiving files (storing into %s)\n", rdir)
+				printed = true
+			}
+			// receiving a file
+			//fmt.Printf("receiving file %s\n", ft.Filename)
+			err = rec.Receive(ft)
+			utils.Bail("failed to receive file", err)
+		}
 	}
+	fmt.Printf("Stored files in %s\n", rdir)
 }
 func find_top_of_git_dir(builddir string) (string, error) {
 	s := builddir

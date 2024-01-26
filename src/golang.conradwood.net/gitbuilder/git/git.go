@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	pb "golang.conradwood.net/apis/gitbuilder"
+	"golang.conradwood.net/gitbuilder/common"
 	"golang.conradwood.net/go-easyops/linux"
 	"golang.conradwood.net/go-easyops/utils"
 	"io"
@@ -20,7 +21,6 @@ var (
 	with_recursive = flag.Bool("git_with_recursive", true, "if true use git-clone --recursive")
 	wd_lock        sync.Mutex
 	workdir_ctr    = 0
-	f_workdir      = flag.String("workdir", "/tmp/gitbuilder", "workdir for repos")
 	recreated      = false
 )
 
@@ -28,7 +28,7 @@ func init() {
 	go cleaner()
 }
 func workdir() string {
-	s, err := filepath.Abs(*f_workdir)
+	s, err := filepath.Abs(common.WorkDir() + "/git")
 	utils.Bail("failed to get absolute path", err)
 	return s
 }
@@ -216,7 +216,3 @@ func (lr *LocalRepo) GetLogMessage(ctx context.Context) (string, error) {
 	}
 	return logmessage, nil
 }
-
-
-
-

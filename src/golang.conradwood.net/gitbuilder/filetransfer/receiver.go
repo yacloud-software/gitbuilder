@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-type Transferrer struct {
+type Receiver struct {
 	dir     string
 	curfile *filehandle
 }
@@ -20,17 +20,16 @@ type FileTransferPacket interface {
 	GetData() []byte
 }
 
-func New(dir string) (*Transferrer, error) {
-	t := &Transferrer{dir: dir}
-	err := utils.RecreateSafely(dir)
-	if err != nil {
-		return nil, err
+func NewReceiver(dir string) (*Receiver, error) {
+	t := &Receiver{dir: dir}
+	if !utils.FileExists(dir) {
+		return nil, fmt.Errorf("cannot receive into non-existing directory \"%s\"", dir)
 	}
 	return t, nil
 }
 
-func (t *Transferrer) Receive(data FileTransferPacket) error {
-	fmt.Printf("Writing data to file \"%s\"\n", data.GetFilename())
+func (t *Receiver) Receive(data FileTransferPacket) error {
+	//	fmt.Printf("Writing data to file \"%s\"\n", data.GetFilename())
 
 	if t.curfile != nil && t.curfile.filename != data.GetFilename() {
 		t.curfile.Close()
@@ -48,17 +47,17 @@ func (t *Transferrer) Receive(data FileTransferPacket) error {
 	err := t.curfile.Write(data.GetData())
 	return err
 }
-func (t *Transferrer) Close() {
+func (t *Receiver) Close() {
 	if t.curfile != nil {
 		t.curfile.Close()
 		t.curfile = nil
 	}
 }
-func (t *Transferrer) openFile(filename string) (*filehandle, error) {
+func (t *Receiver) openFile(filename string) (*filehandle, error) {
 	res := &filehandle{filename: filename}
 	fname := t.dir + "/" + filename
 	dir := filepath.Dir(fname)
-	fmt.Printf("Creating dir \"%s\"\n", dir)
+	//fmt.Printf("Creating dir \"%s\"\n", dir)
 	err := os.MkdirAll(dir, 0777)
 	if err != nil {
 		return nil, err
