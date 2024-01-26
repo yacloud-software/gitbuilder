@@ -27,6 +27,7 @@ message BuildResponse {
   string ResultMessage=3; // a human-readable message
   bool Success=4; // if true the build succeeded
   string LogMessage=5; // the builder sends back the logmessage of the commit it built
+  FileTransferPart FileTransfer=6; // we might be transferring one or more files as part of the response
 }
 message LocalRepo {
   string URL=1;
@@ -42,11 +43,33 @@ message LocalRepoList {
 message BuildScriptList {
   repeated string Names=1;
 }
+message FileTransferPart {
+  string Filename=1; // relative path. file on disk will be opened on first access. Any file previously open, will be closed
+  bytes Data=2; // data to write to file 
+}
+
+message BuildLocalRequest {
+  uint64 RepositoryID=1; // the build scripts might use this
+  string RepoName=2; // the buildscripts might use this
+  repeated string ExcludeBuildScripts=3; // do not run these rules, despite what is configured in the repository
+  repeated string IncludeBuildScripts=4; // do run these rules, in addition to what is configured in the repository
+  uint64 ArtefactID=5; // passed through to build
+  string ArtefactName=6;// passed through to build
+  uint64 BuildNumber=7; // passed through to build (and injected into the binaries)
+}
+
+message BuildLocalFiles {
+  FileTransferPart FileTransfer=1;
+  BuildLocalRequest Request=2; // if that is sent the build starts (and all files will be closed)
+}
+
 // this is doing the actual build. It checksout a git repository, runs the build
 // and uploads the artefacts
 service GitBuilder {
   // build something. Note that this RPC might take several minutes to complete
   rpc Build(BuildRequest) returns (stream BuildResponse);
+  // build something that exists only on the local file system. return the files that would otherwise be uploaded to buildrepo to the client instead
+  rpc BuildFromLocalFiles(stream BuildLocalFiles) returns (stream BuildResponse);
   // get information about the repos on disk
   rpc GetLocalRepos(common.Void) returns (LocalRepoList);
   // get "known" build scripts
