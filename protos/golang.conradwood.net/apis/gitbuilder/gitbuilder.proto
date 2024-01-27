@@ -49,6 +49,12 @@ message FileTransferPart {
   uint32 Permissions=3; // unix permissions
 }
 
+enum ReturnSet {
+  RETURN_ALL_CHANGED=0; // all files that changed during build
+  RETURN_DIST=1; // all files in "dist/"
+  RETURN_BUNDLE=2; // all files in dist, extra, template etc..
+  RETURN_BUNDLE_CHANGED=3; // all files in dist, extra, template etc.. which have changed
+}
 message BuildLocalRequest {
   uint64 RepositoryID=1; // the build scripts might use this
   string RepoName=2; // the buildscripts might use this
@@ -57,6 +63,7 @@ message BuildLocalRequest {
   uint64 ArtefactID=5; // passed through to build
   string ArtefactName=6;// passed through to build
   uint64 BuildNumber=7; // passed through to build (and injected into the binaries)
+  ReturnSet Return=8;
 }
 
 message BuildLocalFiles {
@@ -76,8 +83,9 @@ message BuildRuleDef_C {
 
 message BuildRuleDef {
   string BuildType=1; // any of the supported rules, e.g. "STANDARD_GO"
-  BuildRuleDef_Go Go=2;
-  BuildRuleDef_C C=3;
+  string BuildOS=2; // e.g. "debian-12.4" 
+  BuildRuleDef_Go Go=3;
+  BuildRuleDef_C C=4;
 }
 
 // yaml file defining build rules
