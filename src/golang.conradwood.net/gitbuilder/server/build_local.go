@@ -8,6 +8,7 @@ import (
 	"golang.conradwood.net/gitbuilder/filetransfer"
 	"golang.conradwood.net/go-easyops/utils"
 	"os"
+	"strings"
 	"sync"
 	"time"
 )
@@ -140,11 +141,37 @@ func (e *echoServer) BuildFromLocalFiles(srv pb.GitBuilder_BuildFromLocalFilesSe
 		return err
 	}
 	var filenames_to_send []string
+	var dir_limit []string
+	if blr.Return == pb.ReturnSet_RETURN_DIST {
+		dir_limit = []string{"dist"}
+	} else if blr.Return == pb.ReturnSet_RETURN_BUNDLE || blr.Return == pb.ReturnSet_RETURN_BUNDLE_CHANGED {
+		dir_limit = common.DistDirs
+	}
 	for _, cf := range changed_files {
 		if cf.IsRemoved() {
 			continue
 		}
-		filenames_to_send = append(filenames_to_send, cf.RelativeFilename())
+		include := false
+		if len(dir_limit) == 0 {
+			include = true
+		} else {
+			fname := cf.RelativeFilename()
+			idx := strings.Index(fname, "/")
+			if idx == -1 {
+				continue
+			}
+			topdir := strings.Trim(fname[:idx], "/")
+			for _, dl := range dir_limit {
+				if dl == topdir {
+					include = true
+					break
+				}
+			}
+		}
+		if include {
+			filenames_to_send = append(filenames_to_send, cf.RelativeFilename())
+		}
+
 	}
 	sender := filetransfer.NewSender(srv, send_function)
 	err = sender.SendSomeFiles(build_dir, filenames_to_send)

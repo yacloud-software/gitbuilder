@@ -51,6 +51,28 @@ func defaultBuildRules() *BuildRules {
 
 // parses oldstyle
 func Read(p Printer, filename string) (*BuildRules, error) {
+	b, err := readYaml(p, filename)
+	if err == nil {
+		return b, nil
+	}
+	b, err = readOldStyle(p, filename)
+	return b, err
+}
+
+// read the new yaml style
+func readYaml(p Printer, filename string) (*BuildRules, error) {
+	rules := defaultBuildRules()
+	r := &pb.BuildRules{}
+	err := utils.ReadYaml(filename, r)
+	if err != nil {
+		return nil, err
+	}
+	rules.br = r
+	return rules, nil
+}
+
+// read the old BUILD_RULES text style
+func readOldStyle(p Printer, filename string) (*BuildRules, error) {
 	rules := defaultBuildRules()
 	br := filename //b.GetRepoPath() + "/BUILD_RULES"
 	if !utils.FileExists(br) {
@@ -116,12 +138,17 @@ func Read(p Printer, filename string) (*BuildRules, error) {
 	rules.addBuildTypeFromString("DIST")
 	return rules, nil
 }
-
+func defaultBuildOS() string {
+	return "debian-12.4"
+}
 func (br *BuildRules) addBuildTypeFromString(name string) error {
 	if br.findType(name) != nil {
 		return nil
 	}
-	bdr := &pb.BuildRuleDef{BuildType: name}
+	bdr := &pb.BuildRuleDef{BuildType: name, BuildOS: defaultBuildOS()}
+	if name == "STANDARD_GO" {
+		bdr.Go = &pb.BuildRuleDef_Go{}
+	}
 	br.br.Rules = append(br.br.Rules, bdr)
 	return nil
 }
@@ -179,7 +206,10 @@ func (br *BuildRules) getGo() *pb.BuildRuleDef_Go {
 		}
 	}
 	res := &pb.BuildRuleDef_Go{}
-	rule := &pb.BuildRuleDef{BuildType: "STANDARD_GO", Go: res}
+	rule := &pb.BuildRuleDef{
+		BuildType: "STANDARD_GO",
+		Go:        res,
+	}
 	br.br.Rules = append(br.br.Rules, rule)
 	return res
 }

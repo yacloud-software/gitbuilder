@@ -54,10 +54,15 @@ func main() {
 	fmt.Printf("Sent %d files to server\n", sender.FilesSent())
 
 	fmt.Printf("Starting build...\n")
-	blr := &pb.BuildLocalRequest{RepositoryID: 2,
-		RepoName:    "local_build",
-		BuildNumber: 5,
-		ArtefactID:  2,
+	blr := &pb.BuildLocalRequest{
+		RepositoryID: 2,
+		RepoName:     "local_build",
+		BuildNumber:  5,
+		ArtefactID:   2,
+		Return:       pb.ReturnSet_RETURN_DIST,
+	}
+	if *output_dir != "" {
+		blr.Return = pb.ReturnSet_RETURN_BUNDLE
 	}
 	err = srv.Send(&pb.BuildLocalFiles{Request: blr})
 	utils.Bail("failed to start build", err)
