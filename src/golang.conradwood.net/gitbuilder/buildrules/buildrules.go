@@ -2,6 +2,7 @@ package buildrules
 
 import (
 	"fmt"
+	pb "golang.conradwood.net/apis/gitbuilder"
 	"golang.conradwood.net/go-easyops/utils"
 	"io/ioutil"
 	"strings"
@@ -28,26 +29,29 @@ var (
 )
 
 type BuildRules struct {
-	Prebuild      int
-	PostCommit    int
-	Builds        []string
+	br            *pb.BuildRules
 	Targets       []string
 	ExcludeGoDirs []string
-	GoCGOEnabled  bool
 }
 type Printer interface {
 	Printf(format string, args ...interface{})
 }
 
 func defaultBuildRules() *BuildRules {
-	return &BuildRules{
-		Prebuild:   RULES_REJECT,
-		PostCommit: RULES_DO,
+	res := &BuildRules{
+		br: &pb.BuildRules{
+			PreBuild:   "reject",
+			PostCommit: "do",
+		},
 	}
-
+	res.addBuildTypeFromString("CLEAN")
+	res.addBuildTypeFromString("STATICCHECK")
+	return res
 }
+
+// parses oldstyle
 func Read(p Printer, filename string) (*BuildRules, error) {
-	rules := &BuildRules{}
+	rules := defaultBuildRules()
 	br := filename //b.GetRepoPath() + "/BUILD_RULES"
 	if !utils.FileExists(br) {
 		p.Printf("rules file (%s) does not exist. no builds.\n", br)
@@ -70,21 +74,22 @@ func Read(p Printer, filename string) (*BuildRules, error) {
 			return nil, fmt.Errorf("buildrules: Line %d invalid (only %d parts) [%s]", ln+1, len(sp), line)
 		}
 		if sp[0] == "PREBUILD" {
-			rules.Prebuild, err = parseAction(sp[1])
+			rules.br.PreBuild, err = actionString(sp[1])
 		} else if sp[0] == "POSTCOMMIT" {
-			rules.PostCommit, err = parseAction(sp[1])
+			rules.br.PostCommit, err = actionString(sp[1])
 		} else if sp[0] == "GO_CGO_ENABLED" {
 			b, err := parseBoolean(sp[1])
 			if err != nil {
 				return nil, fmt.Errorf("%s invalid boolean: %s", sp[0], err)
 			}
-			rules.GoCGOEnabled = b
+			rules.getGo().CGOEnabled = b
 		} else if sp[0] == "GO_EXCLUDE_DIRS" {
-			rules.ExcludeGoDirs = strings.Split(sp[1], ",")
+			rules.getGo().DirsExcluded = strings.Split(sp[1], ",")
 		} else if sp[0] == "BUILDS" {
 			gotBuilds = true
 			for _, bs := range strings.Split(sp[1], ",") {
-				rules.Builds = append(rules.Builds, strings.Trim(bs, " "))
+				b := strings.Trim(bs, " ")
+				err = rules.addBuildTypeFromString(b)
 			}
 		} else if sp[0] == "TARGETS" {
 			for _, bs := range strings.Split(sp[1], ",") {
@@ -108,12 +113,35 @@ func Read(p Printer, filename string) (*BuildRules, error) {
 		*/
 	}
 	// add defaults:
-	rules.Builds = append([]string{"CLEAN"}, rules.Builds...)
-	rules.Builds = append([]string{"STATICCHECK"}, rules.Builds...)
-	rules.Builds = append(rules.Builds, "DIST")
+	rules.addBuildTypeFromString("DIST")
 	return rules, nil
 }
 
+func (br *BuildRules) addBuildTypeFromString(name string) error {
+	if br.findType(name) != nil {
+		return nil
+	}
+	bdr := &pb.BuildRuleDef{BuildType: name}
+	br.br.Rules = append(br.br.Rules, bdr)
+	return nil
+}
+
+func (br *BuildRules) findType(name string) *pb.BuildRuleDef {
+	for _, bd := range br.br.Rules {
+		if bd.BuildType == name {
+			return bd
+		}
+	}
+	return nil
+}
+
+func actionString(s string) (string, error) {
+	_, e := parseAction(s)
+	if e != nil {
+		return "", e
+	}
+	return s, nil
+}
 func parseAction(s string) (int, error) {
 	if s == "reject" {
 		return RULES_REJECT, nil
@@ -143,8 +171,21 @@ func (b *BuildRules) CheckBuildType(buildtype string) string {
 	return ""
 }
 
+// get the first go build rule, create if necessary
+func (br *BuildRules) getGo() *pb.BuildRuleDef_Go {
+	for _, bd := range br.br.Rules {
+		if bd.Go != nil {
+			return bd.Go
+		}
+	}
+	res := &pb.BuildRuleDef_Go{}
+	rule := &pb.BuildRuleDef{BuildType: "STANDARD_GO", Go: res}
+	br.br.Rules = append(br.br.Rules, rule)
+	return res
+}
+
 func (br *BuildRules) Go_CGO_EnabledAsEnv() string {
-	if br.GoCGOEnabled {
+	if br.getGo().CGOEnabled {
 		return "1"
 	}
 	return "0"
@@ -155,4 +196,10 @@ func (br *BuildRules) Go_ExcludeDirsAsEnv() string {
 	}
 	s := strings.Join(br.ExcludeGoDirs, " ")
 	return s
+}
+func (br *BuildRules) Proto() *pb.BuildRules {
+	return br.br
+}
+func (br *BuildRules) BuildDefs() []*pb.BuildRuleDef {
+	return br.br.Rules
 }

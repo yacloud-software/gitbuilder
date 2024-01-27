@@ -15,14 +15,15 @@ func (b *Builder) BuildAll(ctx context.Context) error {
 }
 func (b *Builder) BuildWithRules(ctx context.Context, br *buildrules.BuildRules) error {
 	b.Printf("Building #%d, RepositoryID %d, Artefact %d\n", b.buildinfo.BuildNumber(), b.buildinfo.RepositoryID(), b.buildinfo.ArtefactID())
-	b.Printf("Building (%d rules)...\n", len(br.Builds))
-	for _, bds := range br.Builds {
-		b.Printf("Build: %s\n", bds)
+	b.Printf("Building (%d rules)...\n", len(br.BuildDefs()))
+	for _, bds := range br.BuildDefs() {
+		b.Printf("Build: %s\n", bds.BuildType)
 	}
 	target_arch := "amd64"
 	target_os := "linux"
 
-	for _, rulename := range br.Builds {
+	for _, bdef := range br.BuildDefs() {
+		rulename := bdef.BuildType
 		b.Printf("rule: \"%s\"\n", rulename)
 		if !b.BuildInfo().IsScriptIncluded(rulename) {
 			b.Printf("Rule skipped (it is explicitly excluded in buildrequest)\n")

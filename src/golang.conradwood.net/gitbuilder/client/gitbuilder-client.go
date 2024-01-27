@@ -7,7 +7,7 @@ import (
 	"golang.conradwood.net/apis/common"
 	pb "golang.conradwood.net/apis/gitbuilder"
 	_ "golang.conradwood.net/gitbuilder/appinfo"
-	"golang.conradwood.net/gitbuilder/builder"
+	//	"golang.conradwood.net/gitbuilder/builder"
 	"golang.conradwood.net/gitbuilder/buildrules"
 	"golang.conradwood.net/go-easyops/authremote"
 	"golang.conradwood.net/go-easyops/utils"
@@ -18,13 +18,14 @@ import (
 )
 
 var (
+	do_buildrules = flag.String("buildrules", "", "if provided with a `filename`, will parse and output canonical form on stdout")
 	foo           = flag.Bool("foo", false, "if so submit a funny proto")
 	inc_scripts   = flag.String("inc_scripts", "", "comma delimited list of scripts to include in run")
 	ex_scripts    = flag.String("exc_scripts", "", "comma delimited list of scripts to exclude from run")
 	tags          = flag.String("tags", "", "routing tags to choose")
 	echoClient    pb.GitBuilderClient
 	f_url         = flag.String("url", "", "git url to build")
-	f_dir         = flag.String("dir", "", "if not-empty, use this local working copy to build locally instead of calling the server")
+	//	f_dir         = flag.String("dir", "", "if not-empty, use this local working copy to build locally instead of calling the server")
 	f_buildnumber = flag.Uint("build", 0, "buildnumber to use for this build")
 	f_commitid    = flag.String("commitid", "", "commit id to set repository at for build")
 	f_name        = flag.String("name", "", "repo and artefact name")
@@ -41,6 +42,10 @@ func main() {
 
 	// a context with authentication
 	authremote.Context()
+	if *do_buildrules != "" {
+		utils.Bail("failed to do buildrules", BuildRules())
+		os.Exit(0)
+	}
 	if *foo {
 		utils.Bail("failed to foo", Foo())
 		os.Exit(0)
@@ -53,27 +58,6 @@ func main() {
 	}
 	if *status {
 		printStatus(ctx)
-		os.Exit(0)
-	}
-	if *f_dir != "" {
-		b, err := builder.NewBuilder(*f_dir, nil, uint64(*f_buildnumber),
-			&builder.StandardBuildInfo{
-				Req: &pb.BuildRequest{
-					CommitID:     *f_commitid,
-					RepositoryID: 1,
-					RepoName:     "test_reponame",
-					ArtefactName: "test_artefact",
-					BuildNumber:  uint64(*f_buildnumber),
-				},
-			},
-		)
-		br := &buildrules.BuildRules{
-			Builds: []string{"STANDARD_GO"},
-		}
-		//br.Builds = []string{"GO_MODULES"}
-		utils.Bail("failed to get builder", err)
-		err = b.BuildWithRules(ctx, br)
-		utils.Bail("failed to build", err)
 		os.Exit(0)
 	}
 	empty := &pb.BuildRequest{
@@ -201,4 +185,25 @@ func Foo() error {
 		}
 	}
 	return nil
+}
+func BuildRules() error {
+	filename := *do_buildrules
+	br, err := buildrules.Read(&bprinter{}, filename)
+	if err != nil {
+		return err
+	}
+	pr := br.Proto()
+	b, err := utils.MarshalYaml(pr)
+	if err != nil {
+		return err
+	}
+	fmt.Println(string(b))
+	return nil
+}
+
+type bprinter struct {
+}
+
+func (b *bprinter) Printf(format string, args ...interface{}) {
+	fmt.Printf(format, args...)
 }
