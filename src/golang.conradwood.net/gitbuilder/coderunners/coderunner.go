@@ -27,6 +27,8 @@ func Run(ctx context.Context, builder brunner, name string) (bool, error) {
 	var g runner
 	if name == "coderunner-gomodule" {
 		g = &gomodule{}
+	} else if name == "STANDARD_DOTNET" {
+		g = &dotnet{}
 	} else if name == "coderunner-go-version" {
 		g = goversion{}
 	} else if name == "STANDARD_PROTOS" || name == "protos-build.sh" && *use_internal_proto_builder {
@@ -40,7 +42,11 @@ func Run(ctx context.Context, builder brunner, name string) (bool, error) {
 		return false, nil
 	}
 	builder.Printf("rule \"%s\" triggers coderunner\n", name)
-	err := g.Run(ctx, builder)
+	prx := &brunner_proxy{
+		brun:   builder,
+		prefix: fmt.Sprintf("[coderunner %s] ", name),
+	}
+	err := g.Run(ctx, prx)
 	if err != nil {
 		return true, err
 	}

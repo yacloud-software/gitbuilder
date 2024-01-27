@@ -101,7 +101,13 @@ func main() {
 }
 func find_top_of_git_dir(builddir string) (string, error) {
 	s := builddir
-	for !utils.FileExists(s + "/.git/config") {
+	for {
+		if utils.FileExists(s + "/.git/config") {
+			break
+		}
+		if utils.FileExists(s + "/BUILD_RULES") {
+			break
+		}
 		s = filepath.Dir(s)
 	}
 	return s, nil
