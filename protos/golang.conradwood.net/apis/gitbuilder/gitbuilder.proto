@@ -64,11 +64,20 @@ message BuildLocalFiles {
   BuildLocalRequest Request=2; // if that is sent the build starts (and all files will be closed)
 }
 
-message BuildRuleDef {
-  string BuildType=1; // any of the supported rules, e.g. "STANDARD_GO"
+message BuildRuleDef_Go {
+  bool CGOEnabled=1;
+  repeated string DirsExcluded=2;
+}
+message BuildRuleDef_C {
   string CompilerVersion=2; // default "latest"
   string OS=3; // default "linux"
   string CPU=4; // default "amd64"
+}
+
+message BuildRuleDef {
+  string BuildType=1; // any of the supported rules, e.g. "STANDARD_GO"
+  BuildRuleDef_Go Go=2;
+  BuildRuleDef_C C=3;
 }
 
 // yaml file defining build rules
