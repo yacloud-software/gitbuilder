@@ -58,9 +58,32 @@ func Read(p Printer, filename string) (*BuildRules, error) {
 		return b, nil
 	} else {
 		fmt.Printf("failed to parse BUILD_RULES as yaml: %s\n", err)
+		if must_be_yaml(filename) {
+			return nil, err
+		}
 	}
 	b, err = readOldStyle(p, filename)
 	return b, fmt.Errorf("invalid 'old-style' BUILD_RULES: %s", err)
+}
+
+func must_be_yaml(filename string) bool {
+	b, err := utils.ReadFile(filename)
+	if err != nil {
+		return false
+	}
+	for _, line := range strings.Split(string(b), "\n") {
+		line = strings.Trim(line, " ")
+		if len(line) < 3 {
+			continue
+		}
+		if line[0] == '-' {
+			return true
+		}
+		if line == "rules:" {
+			return true
+		}
+	}
+	return false
 }
 
 // read the new yaml style
