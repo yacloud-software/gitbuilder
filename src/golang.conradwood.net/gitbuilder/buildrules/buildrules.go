@@ -31,9 +31,9 @@ var (
 )
 
 type BuildRules struct {
-	br            *pb.BuildRules
-	Targets       []string
-	ExcludeGoDirs []string
+	br      *pb.BuildRules
+	Targets []string
+	//ExcludeGoDirs []string
 }
 type Printer interface {
 	Printf(format string, args ...interface{})
@@ -108,7 +108,7 @@ func readOldStyle(p Printer, filename string) (*BuildRules, error) {
 			}
 			rules.getGo().CGOEnabled = b
 		} else if sp[0] == "GO_EXCLUDE_DIRS" {
-			rules.getGo().DirsExcluded = strings.Split(sp[1], ",")
+			rules.getGo().ExcludeDirs = strings.Split(sp[1], ",")
 		} else if sp[0] == "BUILDS" {
 			gotBuilds = true
 			for _, bs := range strings.Split(sp[1], ",") {
@@ -223,10 +223,20 @@ func (br *BuildRules) Go_CGO_EnabledAsEnv() string {
 	return "0"
 }
 func (br *BuildRules) Go_ExcludeDirsAsEnv() string {
-	if len(br.ExcludeGoDirs) == 0 {
+	if br.br == nil {
 		return ""
 	}
-	s := strings.Join(br.ExcludeGoDirs, " ")
+	var excludes []string
+	for _, rule := range br.br.Rules {
+		if rule.Go == nil {
+			continue
+		}
+		excludes = append(excludes, rule.Go.ExcludeDirs...)
+	}
+	if len(excludes) == 0 {
+		return ""
+	}
+	s := strings.Join(excludes, " ")
 	return s
 }
 func (br *BuildRules) Proto() *pb.BuildRules {
