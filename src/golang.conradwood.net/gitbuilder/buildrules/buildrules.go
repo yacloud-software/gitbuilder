@@ -17,7 +17,7 @@ var (
 	// either name of scripts or coderunners. order of the array matters
 	BUILD_SCRIPTS = map[string][]string{
 		"STANDARD_PROTOS": []string{"protos-build.sh"},
-		"STANDARD_GO":     []string{"coderunner-go-version", "go-build.sh"},
+		"STANDARD_GO":     []string{"coderunner-go-version", "go-build.sh", "go-vet.sh"},
 		"KICAD":           []string{"kicad-build.sh"},
 		"STANDARD_JAVA":   []string{"java-build.sh"},
 		"AUTOBUILD_SH":    []string{"autobuild.sh"},
