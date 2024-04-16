@@ -63,7 +63,10 @@ func Read(p Printer, filename string) (*BuildRules, error) {
 		}
 	}
 	b, err = readOldStyle(p, filename)
-	return b, fmt.Errorf("invalid 'old-style' BUILD_RULES: %s", err)
+	if err != nil {
+		return nil, fmt.Errorf("invalid 'old-style' BUILD_RULES: %s", err)
+	}
+	return b, nil
 }
 
 func must_be_yaml(filename string) bool {
