@@ -73,7 +73,7 @@ message BuildLocalFiles {
 
 message BuildRuleDef_Go {
   bool CGOEnabled=1;
-  repeated string DirsExcluded=2;
+  repeated string ExcludeDirs=2;
 }
 message BuildRuleDef_C {
   string CompilerVersion=2; // default "latest"
