@@ -18,6 +18,8 @@ var (
 	BUILD_SCRIPTS = map[string][]string{
 		"STANDARD_PROTOS": []string{"protos-build.sh"},
 		"STANDARD_GO":     []string{"coderunner-go-version", "go-build.sh", "go-vet.sh"},
+		"GO_VET":          []string{"go-vet.sh"},
+		"GO":              []string{"coderunner-go-version", "go-build.sh"},
 		"KICAD":           []string{"kicad-build.sh"},
 		"STANDARD_JAVA":   []string{"java-build.sh"},
 		"AUTOBUILD_SH":    []string{"autobuild.sh"},
