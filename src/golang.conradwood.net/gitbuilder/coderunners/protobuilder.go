@@ -2,10 +2,16 @@ package coderunners
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"golang.conradwood.net/apis/protorenderer"
 	"golang.conradwood.net/go-easyops/utils"
+	"golang.yacloud.eu/apis/protomanager"
 	"strings"
+)
+
+var (
+	use_pm = flag.Bool("use_protomanager", true, "if true use protomanager instead of protorenderer")
 )
 
 type protobuilder struct {
@@ -39,6 +45,19 @@ func (g protobuilder) submitFile(root, rel_file string) error {
 	if err != nil {
 		return err
 	}
+	if *use_pm {
+		csr := &protomanager.CheckSubmitRequest{}
+		cres, err := protomanager.GetProtoManagerClient().CheckAndSubmit(g.ctx, csr)
+		if err != nil {
+			return err
+		}
+		if cres.IsValid {
+			return nil
+		}
+		return fmt.Errorf("%s", cres.ErrorMessage)
+	}
+
+	// use oldstyle
 	apr := &protorenderer.AddProtoRequest{
 		Name:         pfilename,
 		Content:      string(content),
@@ -63,7 +82,3 @@ func (g protobuilder) submitFile(root, rel_file string) error {
 	//	fmt.Printf("Root: %s, Rel: %s\n", root, rel_file)
 	return nil
 }
-
-
-
-
