@@ -50,5 +50,6 @@ func Run(ctx context.Context, builder brunner, name string) (bool, error) {
 	if err != nil {
 		return true, err
 	}
+	builder.Printf("coderunner \"%s\" completed with no error\n")
 	return true, nil
 }

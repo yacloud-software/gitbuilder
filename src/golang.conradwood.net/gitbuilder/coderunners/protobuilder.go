@@ -30,6 +30,7 @@ func (g protobuilder) Run(ctx context.Context, b brunner) error {
 	if err != nil {
 		return err
 	}
+	b.Printf("protobuilder completed with no errors\n")
 	return nil
 }
 func (g protobuilder) submitFile(root, rel_file string) error {
