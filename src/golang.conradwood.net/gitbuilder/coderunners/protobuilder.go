@@ -46,7 +46,11 @@ func (g protobuilder) submitFile(root, rel_file string) error {
 		return err
 	}
 	if *use_pm {
-		csr := &protomanager.CheckSubmitRequest{}
+		csr := &protomanager.CheckSubmitRequest{
+			Filename:     pfilename,
+			Content:      content,
+			RepositoryID: g.b.BuildInfo().RepositoryID(),
+		}
 		cres, err := protomanager.GetProtoManagerClient().CheckAndSubmit(g.ctx, csr)
 		if err != nil {
 			return err
