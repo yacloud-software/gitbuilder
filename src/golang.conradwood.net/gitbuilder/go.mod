@@ -2,12 +2,14 @@ module golang.conradwood.net/gitbuilder
 
 go 1.21.1
 
+toolchain go1.22.2
+
 require (
 	golang.conradwood.net/apis/auth v1.1.3150
 	golang.conradwood.net/apis/common v1.1.3150
 	golang.conradwood.net/apis/gitbuilder v0.0.0-00010101000000-000000000000
 	golang.conradwood.net/apis/protorenderer v1.1.2989
-	golang.conradwood.net/go-easyops v0.1.29912
+	golang.conradwood.net/go-easyops v0.1.30265
 	golang.yacloud.eu/apis/protomanager v1.1.2989
 	golang.yacloud.eu/yatools v0.1.28748
 	google.golang.org/grpc v1.66.0
