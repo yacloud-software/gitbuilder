@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+
 	"golang.conradwood.net/gitbuilder/buildinfo"
 )
 
@@ -33,6 +34,8 @@ func Run(ctx context.Context, builder brunner, name string) (bool, error) {
 		g = goversion{}
 	} else if name == "STANDARD_PROTOS" || name == "protos-build.sh" && *use_internal_proto_builder {
 		g = protobuilder{}
+	} else if name == "GO_VET" {
+		g = go_vet{}
 	} else if name == "STATICCHECK" {
 		g = &staticcheck{}
 	} else if name == "STANDARD_C" {
