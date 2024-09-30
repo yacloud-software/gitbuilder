@@ -8,6 +8,13 @@ import (
 	"golang.conradwood.net/go-easyops/utils"
 )
 
+var (
+	known_non_vettable = []string{
+		"github.com",
+		"subs",
+	}
+)
+
 type go_vet struct {
 }
 
@@ -17,14 +24,32 @@ start "go vet" in each sub directory containing at least one .go file
 */
 func (g go_vet) Run(ctx context.Context, b brunner) error {
 	var gomods []string
-	utils.DirWalk(b.GetRepoPath(), func(root, rel string) error {
+	non_vettable := known_non_vettable
+	err := utils.DirWalk(b.GetRepoPath(), func(root, rel string) error {
+		// ignore if non go.mod
 		if !strings.HasSuffix(rel, "go.mod") {
 			return nil
 		}
+
+		// ignore patterns in non_vettable
+		nv := false
+		for _, nvs := range non_vettable {
+			if strings.Contains(rel, nvs) {
+				nv = true
+				break
+			}
+		}
+		if nv {
+			return nil
+		}
+
+		// add to list of go.mod files
 		gomods = append(gomods, rel)
 		return nil
 	})
-
+	if err != nil {
+		return err
+	}
 	failed_at_least_one := false
 	for _, gomod := range gomods {
 		gomoddir := strings.TrimSuffix(gomod, "/go.mod")
@@ -55,11 +80,12 @@ func (g go_vet) Run(ctx context.Context, b brunner) error {
 			l := linux.New()
 			res := "PASSED"
 			com := []string{"go", "vet"}
-			out, err := l.SafelyExecute(com, nil)
+			vdir := ffname
+			out, err := l.SafelyExecuteWithDir(com, vdir, nil)
 			if err != nil {
 				failed_at_least_one = true
 				res = "FAILED"
-				b.Printf("go vet failed:\n%s\n", out)
+				b.Printf("go vet in %s failed:\n%s\n", vdir, out)
 				//				return errors.Errorf("vet failed for \"%s\"\n", subdir)
 			}
 			b.Printf("%s   %s (exists=%v)\n", res, subdir, exists)
