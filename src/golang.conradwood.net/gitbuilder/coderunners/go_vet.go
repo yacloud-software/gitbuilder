@@ -39,7 +39,7 @@ func (g go_vet) Run(ctx context.Context, b brunner) error {
 			if idx == -1 {
 				return nil
 			}
-			d := rel[idx+1:]
+			d := rel[:idx]
 			subdirs[d] = true
 			return nil
 		})
