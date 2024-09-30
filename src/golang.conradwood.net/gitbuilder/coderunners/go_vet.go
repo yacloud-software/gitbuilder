@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"golang.conradwood.net/go-easyops/linux"
 	"golang.conradwood.net/go-easyops/utils"
 )
 
@@ -24,6 +25,7 @@ func (g go_vet) Run(ctx context.Context, b brunner) error {
 		return nil
 	})
 
+	failed_at_least_one := false
 	for _, gomod := range gomods {
 		subdirs := make(map[string]bool)
 		root := b.GetRepoPath() + "/" + gomod
@@ -46,12 +48,23 @@ func (g go_vet) Run(ctx context.Context, b brunner) error {
 			exists := utils.FileExists(ffname)
 			if !exists {
 				b.Printf("%s does not exist\n", ffname)
+				continue
 			}
-			b.Printf("   %s (exists=%v)\n", subdir, exists)
+			l := linux.New()
+			res := "PASSED"
+			com := []string{"go", "vet"}
+			out, err := l.SafelyExecute(com, nil)
+			if err != nil {
+				failed_at_least_one = true
+				res = "FAILED"
+				b.Printf("go vet failed:\n%s\n", out)
+				//				return errors.Errorf("vet failed for \"%s\"\n", subdir)
+			}
+			b.Printf("%s   %s (exists=%v)\n", res, subdir, exists)
 
 		}
 	}
 
-	b.Printf("go-vet currently only has a stub\n")
+	b.Printf("go-vet overall pass: %v\n", failed_at_least_one)
 	return nil
 }
