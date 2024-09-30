@@ -27,8 +27,10 @@ func (g go_vet) Run(ctx context.Context, b brunner) error {
 
 	failed_at_least_one := false
 	for _, gomod := range gomods {
+		gomoddir := strings.TrimSuffix(gomod, "/go.mod")
+
 		subdirs := make(map[string]bool)
-		root := b.GetRepoPath() + "/" + gomod
+		root := b.GetRepoPath() + "/" + gomoddir
 		utils.DirWalk(root, func(root, rel string) error {
 			if !strings.HasSuffix(rel, ".go") {
 				return nil
