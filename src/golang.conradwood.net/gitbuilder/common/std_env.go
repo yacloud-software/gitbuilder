@@ -8,9 +8,10 @@ import (
 	"strings"
 	"time"
 
+	am "golang.conradwood.net/apis/auth"
 	"golang.conradwood.net/gitbuilder/buildinfo"
-
 	"golang.conradwood.net/go-easyops/auth"
+	"golang.conradwood.net/go-easyops/authremote"
 	"golang.conradwood.net/go-easyops/cmdline"
 	"golang.conradwood.net/go-easyops/utils"
 )
@@ -42,10 +43,7 @@ type EnvDev interface {
 func StdEnv(ctx context.Context, def EnvDev) []string {
 	bi := def.BuildInfo()
 	u := auth.GetUser(ctx)
-	if u == nil {
-		fmt.Printf("executing without a user account!\n")
-		return nil
-	}
+
 	// standard environment variables...
 	std := `
 JAVA_HOME=/etc/java-home
@@ -105,7 +103,11 @@ LC_CTYPE=en_GB.UTF-8
 		os.MkdirAll(bindir+"/gotmp", 0777)
 	} else {
 		gc, err := filepath.Abs(GetGoCache())
-		gc = gc + fmt.Sprintf("/%s/", u.ID) // must have seperate caches per user, so we force download of go modules per user
+		if u == nil {
+			gc = gc + fmt.Sprintf("/%s/", u.ID) // must have seperate caches per user, so we force download of go modules per user
+		} else {
+			gc = gc + fmt.Sprintf("/%s/", utils.RandomString(16)) // must have seperate caches per user, so we force download of go modules per user
+		}
 		utils.Bail("failed to absolute gocache", err)
 		res = append(res, fmt.Sprintf("GOCACHE=%s/gocache", gc))
 		res = append(res, fmt.Sprintf("GOMODCACHE=%s/gomodcache", gc))
@@ -122,6 +124,27 @@ LC_CTYPE=en_GB.UTF-8
 	bts := time.Now()
 	ldflags = fmt.Sprintf(ldflags, bi.BuildNumber(), "gitbuilder", bts.Unix(), bi.ArtefactID(), bi.RepositoryID(), bi.RepositoryName(), bi.CommitID(), bi.GitURL())
 	res = append(res, fmt.Sprintf("GO_LDFLAGS=%s", ldflags))
+
+	/************** add user specific stuff *******************/
+	if u != nil {
+		res = append(res, fmt.Sprintf("GE_USER_EMAIL=%s", u.Email))
+		res = append(res, fmt.Sprintf("GE_USER_ID=%s", u.ID))
+		tr, err := authremote.GetAuthManagerClient().GetTokenForMe(ctx, &am.GetTokenRequest{DurationSecs: 300})
+		if err != nil {
+			fmt.Printf("unable to get authentication token for external script(s): %s\n", utils.ErrorString(err))
+		}
+		res = append(res, fmt.Sprintf("PROXY_USER=%s@token.yacloud.eu", u.ID))
+		res = append(res, fmt.Sprintf("PROXY_PASSWORD=%s", tr.Token))
+		if GetGoProxyHost() != "" {
+			s := ""
+			if GetGoProxyDirect() {
+				s = ",direct"
+			}
+			res = append(res, fmt.Sprintf("GOPROXY=https://%s@token.yacloud.eu:%s@%s%s", u.ID, tr.Token, GetGoProxyHost(), s))
+		}
+
+	}
+
 	return res
 
 }
