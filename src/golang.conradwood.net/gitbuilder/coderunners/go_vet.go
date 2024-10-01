@@ -62,6 +62,7 @@ func (g go_vet) Run(ctx context.Context, b brunner) error {
 		return err
 	}
 	failed_at_least_one := false
+	env := common.StdEnv(ctx, b)
 	for _, gomod := range gomods {
 		gomoddir := strings.TrimSuffix(gomod, "/go.mod")
 
@@ -94,7 +95,6 @@ func (g go_vet) Run(ctx context.Context, b brunner) error {
 
 			com := []string{gocompiler, "vet"}
 			vdir := ffname
-			env := common.StdEnv(ctx, b)
 			l.SetEnvironment(env)
 			out, err := l.SafelyExecuteWithDir(com, vdir, nil)
 			if err != nil {

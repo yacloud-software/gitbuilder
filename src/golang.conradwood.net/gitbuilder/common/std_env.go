@@ -103,7 +103,7 @@ LC_CTYPE=en_GB.UTF-8
 		os.MkdirAll(bindir+"/gotmp", 0777)
 	} else {
 		gc, err := filepath.Abs(GetGoCache())
-		if u == nil {
+		if u != nil {
 			gc = gc + fmt.Sprintf("/%s/", u.ID) // must have seperate caches per user, so we force download of go modules per user
 		} else {
 			gc = gc + fmt.Sprintf("/%s/", utils.RandomString(16)) // must have seperate caches per user, so we force download of go modules per user
