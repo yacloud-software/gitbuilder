@@ -2,6 +2,7 @@ package coderunners
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"strings"
 	"time"
@@ -13,6 +14,7 @@ import (
 )
 
 var (
+	fail_with_govet    = flag.Bool("fail_go_vet", true, "if false, go vet failures will not result in errors")
 	known_non_vettable = []string{
 		"github.com",
 		"subs",
@@ -101,11 +103,14 @@ func (g go_vet) Run(ctx context.Context, b brunner) error {
 				b.Printf("go vet in %s failed (%s):\n%s\n", vdir, err, out)
 				//				return errors.Errorf("vet failed for \"%s\"\n", subdir)
 			}
-			b.Printf("%s   %s (exists=%v)\n", res, subdir, exists)
+			b.Printf("%s   %s\n", res, subdir)
 
 		}
 	}
 
 	b.Printf("go-vet overall pass: failed=%v\n", failed_at_least_one)
+	if failed_at_least_one && *fail_with_govet {
+		return errors.Errorf("GO VET failed")
+	}
 	return nil
 }
