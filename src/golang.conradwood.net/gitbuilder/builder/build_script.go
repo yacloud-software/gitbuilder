@@ -2,26 +2,23 @@ package builder
 
 import (
 	"context"
-	"flag"
 	"fmt"
-	am "golang.conradwood.net/apis/auth"
-	"golang.conradwood.net/go-easyops/auth"
-	"golang.conradwood.net/go-easyops/authremote"
-	"golang.conradwood.net/go-easyops/cmdline"
-	"golang.conradwood.net/go-easyops/utils"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	am "golang.conradwood.net/apis/auth"
+	"golang.conradwood.net/gitbuilder/common"
+	"golang.conradwood.net/go-easyops/auth"
+	"golang.conradwood.net/go-easyops/authremote"
+	"golang.conradwood.net/go-easyops/cmdline"
+	"golang.conradwood.net/go-easyops/utils"
 )
 
 var (
-	goproxyhost   = flag.String("goproxyhost", "goproxy.conradwood.net", "set the goproxy to this host (e.g. golang.conradwood.net)")
-	goproxydirect = flag.Bool("goproxy_direct", false, "if true, add ',direct' to goproxy. (e.g. golang.conradwood.net needs to fallback to retrieve directly)")
-	maxprocs      = flag.Int("maxprocs", 4, "max processes during compile/check")
-	gocache       = flag.String("override_gocache", "", "if set use this as gocache. do not use in production")
-	locpath       string
+	locpath string
 
 	PATH = []string{
 		"/opt/yacloud/current/ctools/dev/bin", "/opt/yacloud/current/ctools/dev/go/current/go/bin/",
@@ -184,17 +181,17 @@ LC_CTYPE=en_GB.UTF-8
 	res = append(res, fmt.Sprintf("BUILD_TIMESTAMP=%d", b.timestamp.Unix()))
 	res = append(res, fmt.Sprintf("GIT_BRANCH=%s", "master"))
 	res = append(res, fmt.Sprintf("GOBIN=%s/gobin", bindir))
-	res = append(res, fmt.Sprintf("GOMAXPROCS=%d", *maxprocs))
+	res = append(res, fmt.Sprintf("GOMAXPROCS=%d", common.GetMaxProcs()))
 	res = append(res, "GOSUMDB=off")
 	res = append(res, fmt.Sprintf("REGISTRY=%s", cmdline.GetClientRegistryAddress()))
 	//	res = append(res, fmt.Sprintf("SCRIPTDIR=%s", scriptsdir))
-	if *gocache == "" {
+	if common.GetGoCache() == "" {
 		res = append(res, fmt.Sprintf("GOTMPDIR=%s/gotmp", bindir))
 		res = append(res, fmt.Sprintf("GOCACHE=%s/gocache", bindir))
 		os.MkdirAll(bindir+"/gocache", 0777)
 		os.MkdirAll(bindir+"/gotmp", 0777)
 	} else {
-		gc, err := filepath.Abs(*gocache)
+		gc, err := filepath.Abs(common.GetGoCache())
 		gc = gc + fmt.Sprintf("/%s/", u.ID) // must have seperate caches per user, so we force download of go modules per user
 		utils.Bail("failed to absolute gocache", err)
 		res = append(res, fmt.Sprintf("GOCACHE=%s/gocache", gc))
@@ -245,18 +242,15 @@ func (b *Builder) addContextEnv(ctx context.Context, cmd *exec.Cmd) error {
 	}
 	cmd.Env = append(cmd.Env, fmt.Sprintf("PROXY_USER=%s@token.yacloud.eu", u.ID))
 	cmd.Env = append(cmd.Env, fmt.Sprintf("PROXY_PASSWORD=%s", tr.Token))
-	if *goproxyhost != "" {
+	if common.GetGoProxyHost() != "" {
 		s := ""
-		if *goproxydirect {
+		if common.GetGoProxyDirect() {
 			s = ",direct"
 		}
-		cmd.Env = append(cmd.Env, fmt.Sprintf("GOPROXY=https://%s@token.yacloud.eu:%s@%s%s", u.ID, tr.Token, *goproxyhost, s))
+		cmd.Env = append(cmd.Env, fmt.Sprintf("GOPROXY=https://%s@token.yacloud.eu:%s@%s%s", u.ID, tr.Token, common.GetGoProxyHost(), s))
 	}
 	return nil
 }
 func GetAuthManagerClient() am.AuthManagerServiceClient {
 	return authremote.GetAuthManagerClient()
 }
-
-
-

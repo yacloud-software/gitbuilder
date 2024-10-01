@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"golang.conradwood.net/gitbuilder/common"
 	"golang.conradwood.net/go-easyops/linux"
 	"golang.conradwood.net/go-easyops/utils"
 )
@@ -81,6 +82,8 @@ func (g go_vet) Run(ctx context.Context, b brunner) error {
 			res := "PASSED"
 			com := []string{"go", "vet"}
 			vdir := ffname
+			env := common.StdEnv(ctx, b)
+			l.SetEnvironment(env)
 			out, err := l.SafelyExecuteWithDir(com, vdir, nil)
 			if err != nil {
 				failed_at_least_one = true
