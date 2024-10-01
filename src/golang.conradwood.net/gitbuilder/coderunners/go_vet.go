@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"golang.conradwood.net/gitbuilder/common"
 	"golang.conradwood.net/go-easyops/errors"
@@ -86,6 +87,7 @@ func (g go_vet) Run(ctx context.Context, b brunner) error {
 				continue
 			}
 			l := linux.New()
+			l.SetMaxRuntime(time.Duration(180) * time.Second)
 			res := "PASSED"
 
 			com := []string{gocompiler, "vet"}
