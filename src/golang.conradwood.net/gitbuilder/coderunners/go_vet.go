@@ -2,9 +2,11 @@ package coderunners
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"golang.conradwood.net/gitbuilder/common"
+	"golang.conradwood.net/go-easyops/errors"
 	"golang.conradwood.net/go-easyops/linux"
 	"golang.conradwood.net/go-easyops/utils"
 )
@@ -24,6 +26,11 @@ in every directory with a go.mod file,
 start "go vet" in each sub directory containing at least one .go file
 */
 func (g go_vet) Run(ctx context.Context, b brunner) error {
+	gocompiler := common.FindExecutable("go")
+	if gocompiler == "" {
+		return errors.Errorf("no go compiler found")
+	}
+	fmt.Printf("go-vet using go at: %s\n", gocompiler)
 	var gomods []string
 	non_vettable := known_non_vettable
 	err := utils.DirWalk(b.GetRepoPath(), func(root, rel string) error {
@@ -80,7 +87,8 @@ func (g go_vet) Run(ctx context.Context, b brunner) error {
 			}
 			l := linux.New()
 			res := "PASSED"
-			com := []string{"go", "vet"}
+
+			com := []string{gocompiler, "vet"}
 			vdir := ffname
 			env := common.StdEnv(ctx, b)
 			l.SetEnvironment(env)

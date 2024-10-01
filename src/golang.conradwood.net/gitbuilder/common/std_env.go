@@ -17,9 +17,21 @@ import (
 
 var (
 	PATH = []string{
-		"/opt/yacloud/current/ctools/dev/bin", "/opt/yacloud/current/ctools/dev/go/current/go/bin/",
-		"/opt/yacloud/ctools/dev/bin", "/opt/yacloud/ctools/dev/go/current/go/bin/",
-		"/etc/java-home/bin", "/srv/singingcat/binutils/bin/", "~/bin", "/sbin", "/usr/sbin", "/usr/local/bin", "/usr/bin", "/bin", "/srv/java/ant/current/bin", "/srv/singingcat/esp8266/sdk/xtensa-lx106-elf/bin/", "/srv/java/ant/bin", "/srv/java/gradle/latest/bin"}
+		"/opt/yacloud/current/ctools/dev/bin",
+		"/opt/yacloud/current/ctools/dev/go/current/go/bin/",
+		"/opt/yacloud/ctools/dev/bin",
+		"/opt/yacloud/ctools/dev/go/current/go/bin/",
+		"/etc/java-home/bin",
+		"/srv/singingcat/binutils/bin/",
+		"~/bin",
+		"/sbin",
+		"/usr/sbin",
+		"/usr/local/bin",
+		"/usr/bin", "/bin",
+		"/srv/java/ant/current/bin",
+		"/srv/singingcat/esp8266/sdk/xtensa-lx106-elf/bin/",
+		"/srv/java/ant/bin",
+		"/srv/java/gradle/latest/bin"}
 )
 
 type EnvDev interface {
