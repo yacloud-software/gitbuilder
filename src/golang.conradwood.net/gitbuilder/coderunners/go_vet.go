@@ -85,7 +85,7 @@ func (g go_vet) Run(ctx context.Context, b brunner) error {
 			if err != nil {
 				failed_at_least_one = true
 				res = "FAILED"
-				b.Printf("go vet in %s failed:\n%s\n", vdir, out)
+				b.Printf("go vet in %s failed (%s):\n%s\n", vdir, err, out)
 				//				return errors.Errorf("vet failed for \"%s\"\n", subdir)
 			}
 			b.Printf("%s   %s (exists=%v)\n", res, subdir, exists)
@@ -93,6 +93,6 @@ func (g go_vet) Run(ctx context.Context, b brunner) error {
 		}
 	}
 
-	b.Printf("go-vet overall pass: %v\n", failed_at_least_one)
+	b.Printf("go-vet overall pass: failed=%v\n", failed_at_least_one)
 	return nil
 }
