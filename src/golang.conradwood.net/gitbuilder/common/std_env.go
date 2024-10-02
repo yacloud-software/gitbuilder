@@ -53,6 +53,7 @@ SHELL=/bin/bash
 ANT_HOME=/srv/java/ant/current/
 PWD=/tmp
 GOROOT=` + cmdline.GetYACloudDir() + `/ctools/dev/go/current/go
+GOTOOLCHAIN=local
 LANG=en_GB.UTF-8
 LANGUAGE=en_GB:en
 LC_CTYPE=en_GB.UTF-8
