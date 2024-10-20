@@ -2,16 +2,11 @@ package coderunners
 
 import (
 	"context"
-	"flag"
-	"fmt"
-	"golang.conradwood.net/apis/protorenderer"
+	"strings"
+
+	"golang.conradwood.net/go-easyops/errors"
 	"golang.conradwood.net/go-easyops/utils"
 	"golang.yacloud.eu/apis/protomanager"
-	"strings"
-)
-
-var (
-	use_pm = flag.Bool("use_protomanager", true, "if true use protomanager instead of protorenderer")
 )
 
 type protobuilder struct {
@@ -24,10 +19,11 @@ func (g protobuilder) Run(ctx context.Context, b brunner) error {
 	g.ctx = ctx
 	d := b.GetRepoPath() + "/protos/"
 	if !utils.FileExists(d) {
-		return fmt.Errorf("dir %s does not exist", d)
+		return errors.Errorf("(dir \"[repo]/protos\" (%s) does not exist", d)
 	}
 	err := utils.DirWalk(d, g.submitFile)
 	if err != nil {
+		b.Printf("protobuilder encountered an error: %s\n", err)
 		return err
 	}
 	b.Printf("protobuilder completed with no errors\n")
@@ -46,44 +42,19 @@ func (g protobuilder) submitFile(root, rel_file string) error {
 	if err != nil {
 		return err
 	}
-	if *use_pm {
-		csr := &protomanager.CheckSubmitRequest{
-			Filename:     pfilename,
-			Content:      content,
-			RepositoryID: g.b.BuildInfo().RepositoryID(),
-		}
-		cres, err := protomanager.GetProtoManagerClient().CheckAndSubmit(g.ctx, csr)
-		if err != nil {
-			return err
-		}
-		if cres.IsValid {
-			return nil
-		}
-		return fmt.Errorf("%s", cres.ErrorMessage)
-	}
 
-	// use oldstyle
-	apr := &protorenderer.AddProtoRequest{
-		Name:         pfilename,
-		Content:      string(content),
+	csr := &protomanager.CheckSubmitRequest{
+		Filename:     pfilename,
+		Content:      content,
 		RepositoryID: g.b.BuildInfo().RepositoryID(),
 	}
-	cr := &protorenderer.CompileRequest{
-		Compilers:       []protorenderer.CompilerType{protorenderer.CompilerType_GOLANG}, // fastest, good for testing if compile works
-		AddProtoRequest: apr,
-	}
-	cres, err := protorenderer.GetProtoRendererClient().CompileFile(g.ctx, cr)
+	cres, err := protomanager.GetProtoManagerClient().CheckAndSubmit(g.ctx, csr)
 	if err != nil {
 		return err
 	}
-	if cres.CompileError != "" {
-		return fmt.Errorf("Whilst compiling proto %s: %s", rel_file, cres.CompileError)
+	if cres.IsValid {
+		return nil
 	}
-	ur, err := protorenderer.GetProtoRendererClient().UpdateProto(g.ctx, apr)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Proto %s will be in version %d\n", pfilename, ur.Version)
-	//	fmt.Printf("Root: %s, Rel: %s\n", root, rel_file)
-	return nil
+	return errors.Errorf("%s", cres.ErrorMessage)
+
 }
