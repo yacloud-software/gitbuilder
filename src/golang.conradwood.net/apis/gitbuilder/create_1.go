@@ -4,6 +4,7 @@
 */
 
 /* geninfo:
+   rendererv : 2
    filename  : golang.conradwood.net/apis/gitbuilder/gitbuilder.proto
    gopackage : golang.conradwood.net/apis/gitbuilder
    importname: ai_0

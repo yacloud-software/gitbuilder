@@ -4,12 +4,12 @@ go 1.22.2
 
 require (
 	golang.conradwood.net/apis/auth v1.1.3627
-	golang.conradwood.net/apis/common v1.1.3627
+	golang.conradwood.net/apis/common v1.1.3649
 	golang.conradwood.net/apis/gitbuilder v0.0.0-00010101000000-000000000000
 	golang.conradwood.net/go-easyops v0.1.33838
 	golang.yacloud.eu/apis/protomanager v1.1.3395
 	golang.yacloud.eu/yatools v0.1.31663
-	google.golang.org/grpc v1.69.2
+	google.golang.org/grpc v1.70.0
 )
 
 require (
@@ -47,7 +47,7 @@ require (
 	golang.yacloud.eu/apis/unixipc v1.1.3625 // indirect
 	golang.yacloud.eu/apis/urlcacher v1.1.3625 // indirect
 	golang.yacloud.eu/unixipc v0.1.31725 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20241015192408-796eee8c2d53 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20241202173237-19429a94021a // indirect
 	google.golang.org/protobuf v1.36.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

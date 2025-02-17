@@ -58,7 +58,7 @@ func Read(p Printer, filename string) (*BuildRules, error) {
 	if err == nil {
 		return b, nil
 	} else {
-		fmt.Printf("failed to parse BUILD_RULES as yaml: %s\n", err)
+		//		fmt.Printf("failed to parse BUILD_RULES as yaml: %s\n", err)
 		if must_be_yaml(filename) {
 			return nil, err
 		}
