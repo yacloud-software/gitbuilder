@@ -3,11 +3,12 @@ package coderunners
 import (
 	"context"
 	"fmt"
+	"io/fs"
+	"os"
+	"time"
+
 	"golang.conradwood.net/go-easyops/linux"
 	"golang.conradwood.net/go-easyops/utils"
-	"io/fs"
-	"io/ioutil"
-	"time"
 )
 
 type cbuilder struct{}
@@ -19,12 +20,12 @@ func (c *cbuilder) Run(ctx context.Context, builder brunner) error {
 		builder.Printf("WARNING - cbuilder invoked, but directory %s does not exist", srcdir)
 		return nil
 	}
-	subdirs, err := ioutil.ReadDir(srcdir)
+	subdirs, err := os.ReadDir(srcdir)
 	if err != nil {
 		return err
 	}
 
-	var cdirs []fs.FileInfo
+	var cdirs []fs.DirEntry
 	for _, c := range subdirs {
 		if !c.IsDir() {
 			continue
@@ -64,7 +65,3 @@ func (c *cbuilder) Run(ctx context.Context, builder brunner) error {
 	}
 	return nil
 }
-
-
-
-
