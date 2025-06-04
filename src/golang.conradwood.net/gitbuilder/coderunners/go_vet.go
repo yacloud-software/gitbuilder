@@ -18,6 +18,7 @@ var (
 	known_non_vettable = []string{
 		"github.com",
 		"subs",
+		"/vendor",
 	}
 )
 
