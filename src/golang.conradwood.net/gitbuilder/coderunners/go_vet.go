@@ -90,6 +90,18 @@ func (g go_vet) Run(ctx context.Context, b brunner) error {
 				b.Printf("%s does not exist\n", ffname)
 				continue
 			}
+			// ignore patterns in non_vettable
+			nv := ""
+			for _, nvs := range non_vettable {
+				if strings.Contains(ffname, nvs) {
+					nv = nvs
+					break
+				}
+			}
+			if nv != "" {
+				b.Printf("%s is non_vettable (contains \"%s\")\n", ffname, nv)
+				continue
+			}
 			l := linux.New()
 			l.SetMaxRuntime(time.Duration(180) * time.Second)
 			res := "PASSED"
