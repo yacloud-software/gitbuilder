@@ -27,10 +27,12 @@ type echoServer struct {
 func main() {
 	var err error
 	flag.Parse()
+   server.SetHealth(common.Health_STARTING)
 	fmt.Printf("Starting GitBuilderServer...\n")
 
 	sd := server.NewServerDef()
 	sd.SetPort(*port)
+sd.SetOnStartupCallback(startup)
 	sd.SetRegister(server.Register(
 		func(server *grpc.Server) error {
 			e := new(echoServer)
@@ -41,6 +43,9 @@ func main() {
 	err = server.ServerStartup(sd)
 	utils.Bail("Unable to start server", err)
 	os.Exit(0)
+}
+func startup() {
+	server.SetHealth(common.Health_READY)
 }
 
 /************************************
@@ -141,3 +146,6 @@ func (s *serverwriter) Write(buf []byte) (int, error) {
 	}
 	return len(buf), nil
 }
+
+
+
