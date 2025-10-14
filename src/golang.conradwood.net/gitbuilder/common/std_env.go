@@ -73,6 +73,10 @@ LC_CTYPE=en_GB.UTF-8
 		bindir = dir
 	}
 	absdir := def.GetRepoPath()
+	absdir, err = filepath.Abs(absdir)
+	if err != nil {
+		fmt.Printf("Unable to get abs directory. (%s)\n", utils.ErrorString(err))
+	}
 
 	sp := strings.Join(PATH, ":")
 
