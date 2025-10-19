@@ -4,6 +4,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"os"
+
 	"golang.conradwood.net/apis/common"
 	pb "golang.conradwood.net/apis/gitbuilder"
 	_ "golang.conradwood.net/gitbuilder/appinfo"
@@ -14,7 +16,6 @@ import (
 	"golang.conradwood.net/go-easyops/server"
 	"golang.conradwood.net/go-easyops/utils"
 	"google.golang.org/grpc"
-	"os"
 )
 
 var (
@@ -27,12 +28,12 @@ type echoServer struct {
 func main() {
 	var err error
 	flag.Parse()
-   server.SetHealth(common.Health_STARTING)
+	server.SetHealth(common.Health_STARTING)
 	fmt.Printf("Starting GitBuilderServer...\n")
 
 	sd := server.NewServerDef()
 	sd.SetPort(*port)
-sd.SetOnStartupCallback(startup)
+	sd.SetOnStartupCallback(startup)
 	sd.SetRegister(server.Register(
 		func(server *grpc.Server) error {
 			e := new(echoServer)
@@ -61,6 +62,7 @@ func (e *echoServer) GetLocalRepos(ctx context.Context, req *common.Void) (*pb.L
 	return git.GetLocalRepos(), nil
 }
 
+// called by gitserver
 func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) error {
 	u := auth.GetUser(srv.Context())
 	fmt.Printf("Building (as user %s):\n", auth.UserIDString(u))
@@ -98,7 +100,7 @@ func (e *echoServer) Build(req *pb.BuildRequest, srv pb.GitBuilder_BuildServer) 
 	if err != nil {
 		return err
 	}
-
+	fmt.Printf("Responding with logmessage:\n%s\n", logmessage)
 	bd, err := builder.NewBuilder(lr.GitRepoPath(), sw, req.BuildNumber, &builder.StandardBuildInfo{
 		Req: req,
 		/*
@@ -146,6 +148,3 @@ func (s *serverwriter) Write(buf []byte) (int, error) {
 	}
 	return len(buf), nil
 }
-
-
-

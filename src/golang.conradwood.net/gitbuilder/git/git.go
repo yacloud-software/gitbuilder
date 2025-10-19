@@ -4,16 +4,17 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	pb "golang.conradwood.net/apis/gitbuilder"
-	"golang.conradwood.net/gitbuilder/common"
-	"golang.conradwood.net/go-easyops/linux"
-	"golang.conradwood.net/go-easyops/utils"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 	"time"
+
+	pb "golang.conradwood.net/apis/gitbuilder"
+	"golang.conradwood.net/gitbuilder/common"
+	"golang.conradwood.net/go-easyops/linux"
+	"golang.conradwood.net/go-easyops/utils"
 )
 
 var (
@@ -203,16 +204,34 @@ func (lr *LocalRepo) GetLogMessage(ctx context.Context) (string, error) {
 		return "", fmt.Errorf("failed to get git log (%s)", err)
 	}
 
-	logmessage := ""
-	sep := strings.Split(gitlog, "\n")
-	for i, l := range sep {
-		if l == "" {
-			logmessage = strings.Join(sep[i+1:], "\n")
-			logmessage = strings.TrimSuffix(logmessage, "\n")
-			logmessage = strings.TrimSpace(logmessage)
-
-		}
-		//fmt.Printf("%d. \"%s\"\n", i, l)
-	}
+	logmessage := tidyLogMessage(gitlog)
 	return logmessage, nil
+}
+func tidyLogMessage(msg string) string {
+	logmessage := ""
+	sep := strings.Split(msg, "\n")
+	empty_lines := 0
+	last_was_empty := false
+	for _, l := range sep {
+		l = strings.Trim(l, " ")
+		l = strings.Trim(l, "\t")
+		fmt.Printf("[%d] Line: \"%s\"\n", empty_lines, l)
+		if l == "" {
+			if last_was_empty {
+				continue
+			}
+			last_was_empty = true
+			empty_lines++
+			continue
+		}
+		last_was_empty = false
+		if empty_lines != 1 {
+			continue
+		}
+		logmessage = logmessage + l
+	}
+	if logmessage == "" {
+		logmessage = msg
+	}
+	return logmessage
 }

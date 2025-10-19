@@ -4,17 +4,20 @@ import (
 	"context"
 	"flag"
 	"fmt"
+
 	"golang.conradwood.net/apis/common"
 	pb "golang.conradwood.net/apis/gitbuilder"
 	_ "golang.conradwood.net/gitbuilder/appinfo"
+
 	//	"golang.conradwood.net/gitbuilder/builder"
-	"golang.conradwood.net/gitbuilder/buildrules"
-	"golang.conradwood.net/go-easyops/authremote"
-	"golang.conradwood.net/go-easyops/utils"
 	"io"
 	"os"
 	"strings"
 	"time"
+
+	"golang.conradwood.net/gitbuilder/buildrules"
+	"golang.conradwood.net/go-easyops/authremote"
+	"golang.conradwood.net/go-easyops/utils"
 )
 
 var (
@@ -85,7 +88,7 @@ func main() {
 			fmt.Printf("Complete. Success=%v, Message: %s\n", pl.Success, pl.ResultMessage)
 		}
 		if len(pl.Stdout) > 0 {
-			fmt.Printf(string(pl.Stdout))
+			fmt.Print(string(pl.Stdout))
 		}
 	}
 
