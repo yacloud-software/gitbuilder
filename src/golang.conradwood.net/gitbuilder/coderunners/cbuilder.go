@@ -20,6 +20,7 @@ func (c *cbuilder) Run(ctx context.Context, builder brunner) error {
 		builder.Printf("WARNING - cbuilder invoked, but directory %s does not exist", srcdir)
 		return nil
 	}
+	now_timestamp := time.Now().Unix()
 	subdirs, err := os.ReadDir(srcdir)
 	if err != nil {
 		return err
@@ -49,6 +50,7 @@ func (c *cbuilder) Run(ctx context.Context, builder brunner) error {
 			"all",
 			"DIST=" + distdir,
 			fmt.Sprintf("BUILD_ID=%d", bi.BuildNumber()),
+			fmt.Sprintf("BUILDTIME=%d", now_timestamp),
 			fmt.Sprintf("REPOSITORY_ID=%d", bi.RepositoryID()),
 			fmt.Sprintf("ARTEFACT_NAME=%s", bi.RepositoryArtefactName()),
 			fmt.Sprintf("GIT_URL=%s", bi.GitURL()),
